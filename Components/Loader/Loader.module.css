@@ -1,0 +1,45 @@
+.Loader {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(41, 47, 63, 0.95);
+    backdrop-filter: blur(8px);
+    z-index: 9999;
+}
+
+.Loader_box {
+    text-align: center;
+    padding: 2rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(241, 131, 3, 0.2);
+}
+
+.Loader_box img {
+    width: 80px;
+    height: 80px;
+    animation: spin 1.5s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+@media only screen and (max-width: 35em) {
+    .Loader_box {
+        padding: 1.5rem;
+    }
+
+    .Loader_box img {
+        width: 60px;
+        height: 60px;
+    }
+}

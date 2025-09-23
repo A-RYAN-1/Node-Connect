@@ -1,0 +1,205 @@
+.Model {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(41, 47, 63, 0.95);
+    backdrop-filter: blur(8px);
+    z-index: 10000;
+}
+
+.Model_box {
+    width: 85%;
+    max-width: 900px;
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(241, 131, 3, 0.2);
+    padding: 2rem;
+    transition: transform 0.3s ease-in-out;
+}
+
+.Model_box:hover {
+    transform: translateY(-4px);
+}
+
+.Model_box_left img {
+    width: 100%;
+    height: auto;
+    max-height: 500px;
+    object-fit: cover;
+    border-radius: 12px;
+    transition: transform 0.3s ease-in-out;
+}
+
+.Model_box_left img:hover {
+    transform: scale(1.05);
+}
+
+.Model_box_right {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding-left: 1.5rem;
+}
+
+.Model_box_right h1 {
+    color: #FFFFFF;
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin: 0;
+    line-height: 1.2;
+    letter-spacing: 0.5px;
+}
+
+.Model_box_right h1 span {
+    display: block;
+    color: #F18303;
+    font-size: 3.5rem;
+    font-weight: 800;
+}
+
+.Model_box_right p {
+    color: #B0B6C1;
+    font-size: 1.1rem;
+    margin: 0;
+    line-height: 1.5;
+}
+
+.Model_box_right small {
+    color: #B0B6C1;
+    font-size: 0.9rem;
+    font-weight: 400;
+}
+
+.Model_box_right_name_info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 0.8rem 1.2rem;
+    border-radius: 8px;
+    border: 1px solid rgba(241, 131, 3, 0.2);
+    transition: background 0.3s ease-in-out;
+}
+
+.Model_box_right_name_info:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.Model_box_right_name_info img {
+    width: 24px;
+    height: 24px;
+    transition: transform 0.3s ease-in-out;
+}
+
+.Model_box_right_name_info img:hover {
+    transform: scale(1.1);
+}
+
+.Model_box_right_name_info input {
+    width: 100%;
+    background: transparent;
+    outline: none;
+    border: none;
+    color: #FFFFFF;
+    font-size: 1rem;
+}
+
+.Model_box_right_name_info input::placeholder {
+    color: #B0B6C1;
+}
+
+.Model_box_right_name_info input:focus {
+    color: #F18303;
+}
+
+.Model_box_right_name_btn {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.Model_box_right_name_btn button {
+    background: linear-gradient(90deg, #F18303, #FFAB38);
+    border: none;
+    padding: 0.8rem 1.5rem;
+    color: #FFFFFF;
+    font-size: 1rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    box-shadow: 0 2px 8px rgba(241, 131, 3, 0.3);
+}
+
+.Model_box_right_name_btn button:hover {
+    background: linear-gradient(90deg, #FFAB38, #F18303);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(241, 131, 3, 0.5);
+}
+
+@media only screen and (max-width: 35em) {
+    .Model {
+        position: absolute;
+        inset: 0 0 -70% 0;
+    }
+
+    .Model_box {
+        width: 90%;
+        grid-template-columns: 1fr;
+        padding: 1.5rem;
+    }
+
+    .Model_box_left img {
+        max-height: 300px;
+        margin-bottom: 1rem;
+    }
+
+    .Model_box_right {
+        padding-left: 0;
+    }
+
+    .Model_box_right h1 {
+        font-size: 1.8rem;
+    }
+
+    .Model_box_right h1 span {
+        font-size: 2.2rem;
+    }
+
+    .Model_box_right p {
+        font-size: 1rem;
+    }
+
+    .Model_box_right small {
+        font-size: 0.85rem;
+    }
+
+    .Model_box_right_name_info {
+        padding: 0.6rem 1rem;
+    }
+
+    .Model_box_right_name_info input {
+        font-size: 0.9rem;
+    }
+
+    .Model_box_right_name_btn {
+        grid-template-columns: 1fr;
+    }
+
+    .Model_box_right_name_btn button {
+        font-size: 0.9rem;
+        padding: 0.6rem 1.2rem;
+    }
+}

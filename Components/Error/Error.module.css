@@ -1,0 +1,57 @@
+.Error {
+    position: fixed;
+    inset: 20% 20% 20% 20%;
+    z-index: 10000;
+    margin: 0 auto;
+    max-width: 500px;
+    background: linear-gradient(145deg, rgba(41, 47, 63, 0.95), rgba(20, 25, 40, 0.95));
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(241, 131, 3, 0.2);
+    transition: transform 0.3s ease-in-out;
+}
+
+.Error:hover {
+    transform: translateY(-4px);
+}
+
+.Error_box {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.Error_box h1 {
+    color: #FFFFFF;
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0;
+    letter-spacing: 0.5px;
+}
+
+.Error_box p {
+    color: #F18303;
+    font-size: 1.1rem;
+    font-weight: 400;
+    margin: 0;
+    word-break: break-word;
+}
+
+@media only screen and (max-width: 35em) {
+    .Error {
+        inset: 15% 10% 15% 10%;
+        padding: 1.5rem;
+        max-width: 90%;
+    }
+
+    .Error_box h1 {
+        font-size: 1.2rem;
+    }
+
+    .Error_box p {
+        font-size: 0.9rem;
+    }
+}

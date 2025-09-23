@@ -1,0 +1,219 @@
+.Chat {
+    width: 85%;
+    margin: 2rem auto;
+    padding: 1.5rem;
+    background: linear-gradient(145deg, rgba(41, 47, 63, 0.95), rgba(20, 25, 40, 0.95));
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    overflow-y: auto;
+    max-height: 80vh;
+}
+
+.Chat_box {
+    display: grid;
+    grid-template-columns: 1fr;
+    width: 90%;
+    margin: 0 auto;
+    min-height: 50vh;
+    overflow-y: auto;
+}
+
+.Chat_box_left {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.Chat_box_left > div {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.Chat_box_left p {
+    background: rgba(241, 131, 3, 0.15);
+    color: #FFFFFF;
+    padding: 1rem 1.5rem;
+    border-radius: 12px 12px 12px 0;
+    margin: 0;
+    font-size: 1rem;
+    max-width: 70%;
+    word-break: break-word;
+    position: relative;
+    transition: background 0.3s ease-in-out;
+}
+
+.Chat_box_left p:hover {
+    background: rgba(241, 131, 3, 0.25);
+}
+
+.Chat_box_left_title {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-size: 1rem;
+}
+
+.Chat_box_left_title img {
+    border-radius: 50%;
+    object-fit: cover;
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.1);
+    transition: transform 0.3s ease-in-out;
+}
+
+.Chat_box_left_title img:hover {
+    transform: scale(1.1);
+}
+
+.Chat_box_left_title span {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    color: #FFFFFF;
+    font-weight: 500;
+}
+
+.Chat_box_left_title small {
+    color: #B0B6C1;
+    font-size: 0.85rem;
+}
+
+.Chat_user_info {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+}
+
+.Chat_user_info img {
+    border-radius: 50%;
+    object-fit: cover;
+    width: 60px;
+    height: 60px;
+}
+
+.Chat_user_info_box h4 {
+    color: #FFFFFF;
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin: 0;
+    letter-spacing: 0.5px;
+}
+
+.Chat_user_info_box p {
+    color: #B0B6C1;
+    font-size: 0.9rem;
+    margin: 0.3rem 0 0;
+}
+
+.Chat_box_send {
+    margin-top: 1.5rem;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+}
+
+.Chat_box_send_img {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.Chat_box_send_img input {
+    flex: 1;
+    background: rgba(241, 131, 3, 0.1);
+    outline: none;
+    border: none;
+    padding: 0.8rem 1.2rem;
+    color: #FFFFFF;
+    font-size: 1rem;
+    border-radius: 8px;
+    transition: background 0.3s ease-in-out;
+}
+
+.Chat_box_send_img input::placeholder {
+    color: #B0B6C1;
+}
+
+.Chat_box_send_img input:focus {
+    background: rgba(241, 131, 3, 0.2);
+}
+
+.Chat_box_send_img img {
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    transition: transform 0.3s ease-in-out;
+}
+
+.Chat_box_send_img img:hover {
+    transform: scale(1.1);
+}
+
+@media only screen and (max-width: 35em) {
+    .Chat {
+        width: 90%;
+        padding: 1rem;
+        margin: 1.5rem auto;
+    }
+
+    .Chat_box {
+        width: 100%;
+    }
+
+    .Chat_box_left p {
+        font-size: 0.9rem;
+        max-width: 85%;
+        padding: 0.8rem 1.2rem;
+    }
+
+    .Chat_box_left_title img {
+        width: 35px;
+        height: 35px;
+    }
+
+    .Chat_box_left_title span {
+        font-size: 0.9rem;
+    }
+
+    .Chat_box_left_title small {
+        font-size: 0.75rem;
+    }
+
+    .Chat_user_info {
+        gap: 1rem;
+        padding: 0.8rem;
+    }
+
+    .Chat_user_info img {
+        width: 50px;
+        height: 50px;
+    }
+
+    .Chat_user_info_box h4 {
+        font-size: 1.1rem;
+    }
+
+    .Chat_user_info_box p {
+        font-size: 0.8rem;
+    }
+
+    .Chat_box_send_img input {
+        font-size: 0.9rem;
+        padding: 0.6rem 1rem;
+    }
+
+    .Chat_box_send_img img {
+        width: 35px;
+        height: 35px;
+    }
+
+    .show {
+        display: none;
+    }
+}

@@ -1,0 +1,52 @@
+.Friend {
+    width: 85%;
+    margin: 2rem auto;
+    padding: 1.5rem;
+    background: linear-gradient(145deg, rgba(41, 47, 63, 0.95), rgba(20, 25, 40, 0.95));
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.Friend_box {
+    display: grid;
+    grid-template-columns: 1.2fr 2fr;
+    gap: 2rem;
+}
+
+.Friend_box_left {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.Friend_box_right {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+@media only screen and (max-width: 35em) {
+    .Friend {
+        width: 90%;
+        margin: 1.5rem auto;
+        padding: 1rem;
+    }
+
+    .Friend_box {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    .Friend_box_left {
+        padding: 1rem;
+        max-height: 50vh;
+    }
+
+    .Friend_box_right {
+        padding: 1rem;
+    }
+}
