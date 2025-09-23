@@ -1,0 +1,113 @@
+.Card {
+    width: 100%;
+    background: linear-gradient(145deg, rgba(41, 47, 63, 0.95), rgba(20, 25, 40, 0.95));
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease-in-out;
+    cursor: pointer;
+}
+
+.Card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 16px rgba(241, 131, 3, 0.3);
+    background: linear-gradient(145deg, rgba(50, 56, 72, 0.95), rgba(30, 35, 50, 0.95));
+}
+
+.Card_box {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1.2rem;
+    border-bottom: 1px solid rgba(241, 131, 3, 0.2);
+}
+
+.Card_box_left {
+    border-radius: 50%;
+    overflow: hidden;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.Card_box_left_img {
+    object-fit: cover;
+    border-radius: 50%;
+    transition: transform 0.3s ease-in-out;
+}
+
+.Card_box_left_img:hover {
+    transform: scale(1.1);
+}
+
+.Card_box_right {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex: 1;
+}
+
+.Card_box_right_middle {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+.Card_box_right_middle h4 {
+    color: #FFFFFF;
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin: 0;
+    letter-spacing: 0.5px;
+}
+
+.Card_box_right_middle small {
+    color: #B0B6C1;
+    font-size: 0.9rem;
+    font-weight: 400;
+}
+
+.Card_box_right_end {
+    display: flex;
+    align-items: center;
+}
+
+.Card_box_right_end small {
+    color: #F18303;
+    font-size: 1rem;
+    font-weight: 500;
+    background: rgba(241, 131, 3, 0.1);
+    padding: 0.3rem 0.6rem;
+    border-radius: 8px;
+}
+
+@media only screen and (max-width: 35em) {
+    .Card {
+        border-radius: 8px;
+    }
+
+    .Card_box {
+        padding: 1rem;
+        gap: 1rem;
+    }
+
+    .Card_box_left {
+        width: 40px;
+        height: 40px;
+    }
+
+    .Card_box_right_middle h4 {
+        font-size: 1rem;
+    }
+
+    .Card_box_right_middle small {
+        font-size: 0.8rem;
+    }
+
+    .Card_box_right_end small {
+        font-size: 0.9rem;
+        padding: 0.2rem 0.5rem;
+    }
+}
