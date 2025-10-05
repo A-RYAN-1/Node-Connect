@@ -18,6 +18,8 @@ export const ChatAppProvider = ({ children }) => {
   const [friendMsg, setFriendMsg] = useState([]);
   const [loading, setLoading] = useState(false);
   const [userLists, setUserLists] = useState([]);
+  const [tokenBalance, setTokenBalance] = useState(0);
+
   const [error, setError] = useState("");
 
   //CHAT USER DATA
@@ -52,6 +54,9 @@ export const ChatAppProvider = ({ children }) => {
         const filterArray = filterUsersExcludingFriends(newArray, friendLists);
         console.log(filterArray);
         setUserLists(filterArray);
+        const balance = await contract.minerReward(address);
+      setTokenBalance(balance.toNumber()); // convert BigNumber to number
+
       }
     } catch (error) {
       // setError("Please Install And Connect Your Wallet");
@@ -128,7 +133,20 @@ export const ChatAppProvider = ({ children }) => {
       const addMessage = await contract.sendMessage(address, msg);
       setLoading(true);
       await addMessage.wait();
-      setLoading(false);
+       console.log("Message sent successfully!");
+
+    // Call mining only ONCE
+    //const mineTx = await contract.mineMessageSafe(address, 1);
+    //const receipt = await mineTx.wait();
+
+    //const event = receipt.events.find(e => e.event === "MiningResult");
+    //if (event && event.args.success) {
+    //  console.log(`✅ Mining successful! Hash: ${event.args.hash}`);
+    //} else {
+     // console.log("⚠️ Mining failed or not successful");
+    //}
+
+    setLoading(false);
       window.location.reload();
     } catch (error) {
       setError("Please reload and try again");
@@ -139,8 +157,10 @@ export const ChatAppProvider = ({ children }) => {
   const readUser = async (userAddress) => {
     const contract = await connectingWithContract();
     const userName = await contract.getUsername(userAddress);
+   
     setCurrentUserName(userName);
     setCurrentUserAddress(userAddress);
+   
   };
   return (
     <ChatAppContect.Provider
@@ -161,6 +181,7 @@ export const ChatAppProvider = ({ children }) => {
         error,
         currentUserName,
         currentUserAddress,
+        tokenBalance,
       }}
     >
       {children}

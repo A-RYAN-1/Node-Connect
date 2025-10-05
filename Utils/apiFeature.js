@@ -53,20 +53,21 @@ export const connectingWithContract = async () => {
 };
 
 export const converTime = (time) => {
-  const newTime = new Date(time.toNumber());
+  const newTime = new Date(time.toNumber() * 1000); // convert seconds → ms
 
-  const realTime =
-    newTime.getHours() +
-    "/" +
-    newTime.getMinutes() +
-    "/" +
-    newTime.getSeconds() +
-    "  Date:" +
-    newTime.getDate() +
-    "/" +
-    (newTime.getMonth() + 1) +
-    "/" +
-    newTime.getFullYear();
+  let hours = newTime.getHours();
+  const minutes = newTime.getMinutes().toString().padStart(2, "0");
 
+  const ampm = hours >= 12 ? "PM" : "AM";
+  hours = hours % 12 || 12; // convert 0 -> 12 for 12 AM
+
+  const day = newTime.getDate().toString().padStart(2, "0");
+  const month = (newTime.getMonth() + 1).toString().padStart(2, "0");
+  const year = newTime.getFullYear();
+
+  const realTime = `${hours}:${minutes} ${ampm}  Date: ${day}/${month}/${year}`;
   return realTime;
 };
+
+
+
