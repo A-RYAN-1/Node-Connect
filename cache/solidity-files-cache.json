@@ -1,9 +1,9 @@
 {
   "_format": "hh-sol-cache-2",
   "files": {
-    "C:\\Users\\amazi\\OneDrive\\Desktop\\chat-dapp\\chat-dapp\\contracts\\ChatApp.sol": {
-      "lastModificationDate": 1758597635300,
-      "contentHash": "b0dbab85fcc1b451d3572c0d23a5d850",
+    "D:\\mwhahaaa\\Node-Connect\\contracts\\ChatApp.sol": {
+      "lastModificationDate": 1759681420267,
+      "contentHash": "f7e3e628a6b5757324952b2b22980670",
       "sourceName": "contracts/ChatApp.sol",
       "solcConfig": {
         "version": "0.8.19",

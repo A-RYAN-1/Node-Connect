@@ -100,13 +100,12 @@ const Chat = ({
         {currentUserName && currentUserAddress ? (
           <div className={Style.Chat_box_send}>
             <div className={Style.Chat_box_send_img}>
-              <Image src={images.smile} alt="smile" width={50} height={50} />
               <input
                 type="text"
                 placeholder="type your message"
                 onChange={(e) => setMessage(e.target.value)}
               />
-              <Image src={images.file} alt="file" width={50} height={50} />
+              
               {loading == true ? (
                 <Loader />
               ) : (

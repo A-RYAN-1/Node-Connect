@@ -23,8 +23,8 @@ const NavBar = () => {
       link: "/",
     },
     {
-      menu: "SETTING",
-      link: "/",
+      menu: "LeaderBoard",
+      link: "leaderboard",
     },
   ];
 
@@ -33,7 +33,7 @@ const NavBar = () => {
   const [open, setOpen] = useState(false);
   const [openModel, setOpenModel] = useState(false);
 
-  const { account, userName, connectWallet, createAccount, error } =
+  const { account, userName, connectWallet, createAccount, error,tokenBalance } =
     useContext(ChatAppContect);
   return (
     <div className={Style.NavBar}>
@@ -93,25 +93,28 @@ const NavBar = () => {
 
           {/* CONNECT WALLET */}
           <div className={Style.NavBar_box_right_connect}>
-            {account == "" ? (
-              <button onClick={() => connectWallet()}>
-                {""}
-                <span>Connect Wallet</span>
-              </button>
-            ) : (
-              <button onClick={() => setOpenModel(true)}>
-                {""}
-                <Image
-                  src={userName ? images.accountName : images.create2}
-                  alt="Account image"
-                  width={20}
-                  height={20}
-                />
-                {""}
-                <small>{userName || "Create Account"}</small>
-              </button>
-            )}
-          </div>
+  {account == "" ? (
+    <button onClick={() => connectWallet()}>
+      <span>Connect Wallet</span>
+    </button>
+  ) : (
+    <div className={Style.connectedSection}>
+      <button onClick={() => setOpenModel(true)}>
+        <Image
+          src={userName ? images.accountName : images.create2}
+          alt="Account image"
+          width={20}
+          height={20}
+        />
+        <small>{userName || "Create Account"}</small>
+      </button>
+
+      <div className={Style.tokenBalance}>
+        💰 <span>{tokenBalance}</span> TOK
+      </div>
+    </div>
+  )}
+</div>
 
           <div
             className={Style.NavBar_box_right_open}

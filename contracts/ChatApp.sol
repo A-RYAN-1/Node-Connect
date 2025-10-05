@@ -31,7 +31,7 @@ contract ChatApp{
 
     mapping(address => user) userList;
     mapping(bytes32 => message[]) allMessages;
-
+    mapping(address => uint256) public minerReward;
     //CHECK USER EXIST
     function checkUserExists(address pubkey) public view returns(bool){
         return bytes(userList[pubkey].name).length > 0;
@@ -45,6 +45,7 @@ contract ChatApp{
         userList[msg.sender].name = name;
 
         getAllUsers.push(AllUserStruck(name, msg.sender));
+        minerReward[msg.sender] += 5;
     }
 
     //GET USERNAME
@@ -62,6 +63,8 @@ contract ChatApp{
 
         _addFriend(msg.sender, friend_key, name);
         _addFriend(friend_key, msg.sender, userList[msg.sender].name);
+        minerReward[msg.sender] += 1;
+    minerReward[friend_key] += 1;
     }
 
     //checkAlreadyFriends
@@ -107,6 +110,8 @@ contract ChatApp{
         bytes32 chatCode = _getChatCode(msg.sender, friend_key);
         message memory newMsg = message(msg.sender, block.timestamp, _msg);
         allMessages[chatCode].push(newMsg);
+        minerReward[msg.sender] += 1;
+        minerReward[friend_key] += 1;
     }
 
     //READ MESSAGE
@@ -118,4 +123,32 @@ contract ChatApp{
     function getAllAppUser() public view returns(AllUserStruck[] memory){
         return getAllUsers;
     }
+    uint256 public difficulty = 2**240; // adjust for testnet
+
+event MiningResult(address miner, bool success, bytes32 hash);
+
+function mineMessageSafe(address friend_key, uint256 nonce) external returns (bool) {
+    bytes32 chatCode = _getChatCode(msg.sender, friend_key);
+
+    // Check if there are messages to mine
+    if (allMessages[chatCode].length == 0) {
+        emit MiningResult(msg.sender, false, 0);
+        return false; // nothing to mine, safely exit
+    }
+
+    message memory lastMsg = allMessages[chatCode][allMessages[chatCode].length - 1];
+    bytes32 hash = keccak256(abi.encodePacked(chatCode, lastMsg.msg, lastMsg.timestamp, nonce));
+
+    // Check proof of work
+    if (uint256(hash) >= difficulty) {
+        emit MiningResult(msg.sender, false, hash); // failed mining attempt
+        return false;
+    }
+
+    // Successful mining
+    minerReward[msg.sender] += 1;
+    emit MiningResult(msg.sender, true, hash);
+    return true;
+}
+
 }
