@@ -15,11 +15,7 @@ const NavBar = () => {
       link: "alluser",
     },
     {
-      menu: "CHAT",
-      link: "/",
-    },
-    {
-      menu: "CONTACT",
+      menu: "Chat",
       link: "/",
     },
     {

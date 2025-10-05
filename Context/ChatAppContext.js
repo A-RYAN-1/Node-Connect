@@ -18,6 +18,7 @@ export const ChatAppProvider = ({ children }) => {
   const [friendMsg, setFriendMsg] = useState([]);
   const [loading, setLoading] = useState(false);
   const [userLists, setUserLists] = useState([]);
+  const [userListsforleaderboard, setUserListsforleaderboard] = useState([]);
   const [tokenBalance, setTokenBalance] = useState(0);
 
   const [error, setError] = useState("");
@@ -47,13 +48,28 @@ export const ChatAppProvider = ({ children }) => {
 
         //GET ALL APP USER LIST
         const userList = await contract.getAllAppUser();
+        const userListforleaderboard = await contract.getAllAppUser();
+        
         const newArray = userList.filter(
           (user) => user.accountAddress.toLowerCase() !== address
         );
+        const usersWithTokens = await Promise.all(
+    userListforleaderboard.map(async (user) => {
+    const balance = await contract.minerReward(user.accountAddress); // fetch token
+    return {
+      ...user,
+      tokens: balance.toNumber(), // convert BigNumber to number
+    };
+  })
+);
+
+// optional: sort descending by tokens
+usersWithTokens.sort((a, b) => b.tokens - a.tokens);
 
         const filterArray = filterUsersExcludingFriends(newArray, friendLists);
         console.log(filterArray);
         setUserLists(filterArray);
+        setUserListsforleaderboard(usersWithTokens);
         const balance = await contract.minerReward(address);
       setTokenBalance(balance.toNumber()); // convert BigNumber to number
 
@@ -181,6 +197,7 @@ export const ChatAppProvider = ({ children }) => {
         error,
         currentUserName,
         currentUserAddress,
+        userListsforleaderboard,
         tokenBalance,
       }}
     >

@@ -1,51 +1,34 @@
-import React, { useState, useEffect, useContext } from "react";
-// INTERNAL IMPORT
-import { UserCard } from "../Components/index";
-import Style from "../styles/alluser.module.css";
+import React, { useEffect, useState, useContext } from "react";
 import { ChatAppContect } from "../Context/ChatAppContext";
+import { connectingWithContract } from "../Utils/apiFeature";
+import { UserCard } from "../Components/index";
+import Style from "../styles/leaderboard.module.css";
 
 const Leaderboard = () => {
-  const { userLists, connectingWithContract } = useContext(ChatAppContect);
-  const [sortedUsers, setSortedUsers] = useState([]);
+const { userListsforleaderboard } = useContext(ChatAppContect);
 
-  useEffect(() => {
-    const fetchBalances = async () => {
-      try {
-        const contract = await connectingWithContract();
-
-        // Fetch balances for all users
-        const usersWithBalance = await Promise.all(
-          userLists.map(async (user) => {
-            const balance = await contract.tokenBalance(user.accountAddress);
-            return {
-              ...user,
-              balance: balance.toNumber(), // convert BigNumber
-            };
-          })
-        );
-
-        // Sort descending by balance
-        usersWithBalance.sort((a, b) => b.balance - a.balance);
-        setSortedUsers(usersWithBalance);
-      } catch (error) {
-        console.log("Error fetching balances:", error);
-      }
-    };
-
-    if (userLists.length > 0) fetchBalances();
-  }, [userLists, connectingWithContract]);
 
   return (
-    <div>
-      <div className={Style.alluser_info}>
-        <h1>Leaderboard</h1>
-      </div>
-
-      <div className={Style.alluser}>
-        {sortedUsers.map((el, i) => (
-          <UserCard key={i + 1} el={el} i={i} />
-        ))}
-      </div>
+     <div className={Style.LeaderboardContainer}>
+      <h1>Leaderboard</h1>
+      <table className={Style.LeaderboardTable}>
+        <thead>
+          <tr>
+            <th>Rank</th>
+            <th>Name</th>
+            <th>Tokens</th>
+          </tr>
+        </thead>
+        <tbody>
+          {userListsforleaderboard.map((user, index) => (
+            <tr key={user.accountAddress}>
+              <td>{index + 1}</td>
+              <td>{user.name}</td>
+              <td>{user.tokens}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 };
