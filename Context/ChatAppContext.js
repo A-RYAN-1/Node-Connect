@@ -20,6 +20,7 @@ export const ChatAppProvider = ({ children }) => {
   const [userLists, setUserLists] = useState([]);
   const [userListsforleaderboard, setUserListsforleaderboard] = useState([]);
   const [tokenBalance, setTokenBalance] = useState(0);
+const [userListsforfind, setUserListsforfind] = useState([]);
 
   const [error, setError] = useState("");
 
@@ -49,8 +50,13 @@ export const ChatAppProvider = ({ children }) => {
         //GET ALL APP USER LIST
         const userList = await contract.getAllAppUser();
         const userListforleaderboard = await contract.getAllAppUser();
-        
+        const newarray2 = await contract.getAllAppUser();
+        const userListforfind = newarray2.filter(
+          (user) => user.accountAddress.toLowerCase() !== address
+        );
+        setUserListsforfind(userListsforfind);
         const newArray = userList.filter(
+
           (user) => user.accountAddress.toLowerCase() !== address
         );
         const usersWithTokens = await Promise.all(
@@ -198,6 +204,7 @@ usersWithTokens.sort((a, b) => b.tokens - a.tokens);
         currentUserName,
         currentUserAddress,
         userListsforleaderboard,
+        userListsforfind,
         tokenBalance,
       }}
     >
