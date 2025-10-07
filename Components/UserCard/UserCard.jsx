@@ -1,23 +1,31 @@
 import React from "react";
 import Image from "next/image";
 
-//INTERNAL IMPORT
+// INTERNAL IMPORT
 import Style from "./UserCard.module.css";
 import images from "../../assets";
+
 const UserCard = ({ el, i, addFriends }) => {
   return (
     <div className={Style.UserCard}>
       <div className={Style.UserCard_box}>
-        <Image
-          className={Style.UserCard_box_img}
-          src={images[`image${i + 1}`]}
-          alt="user"
-          width={100}
-          height={100}
-        />
+        {/* User Image */}
+        <div className={Style.UserCard_box_img_wrapper}>
+          <Image
+            className={Style.UserCard_box_img}
+            src={images[`image${i + 1}`]}
+            alt="user"
+            width={100}
+            height={100}
+          />
+        </div>
 
+        {/* User Info */}
         <div className={Style.UserCard_box_info}>
-          <h3>{el.name}</h3>
+          <div className={Style.UserCard_box_name}>
+            <h3>{el.name}</h3>
+            {/* Future token display can go here */}
+          </div>
           <p>{el.accountAddress.slice(0, 25)}..</p>
           <button
             onClick={() =>
@@ -29,7 +37,8 @@ const UserCard = ({ el, i, addFriends }) => {
         </div>
       </div>
 
-      <small className={Style.number}>{i + 1}</small>
+      {/* Card Index */}
+      <span className={Style.number}>{i + 1}</span>
     </div>
   );
 };
