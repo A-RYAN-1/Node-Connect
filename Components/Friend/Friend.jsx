@@ -1,7 +1,7 @@
-import React, { useState, useContext } from "react";
+import React, { useContext } from "react";
 import Image from "next/image";
 
-//INTERNAL IMPORT
+// INTERNAL IMPORT
 import Style from "./Friend.module.css";
 import images from "../../assets";
 import Card from "./Card/Card";
@@ -9,8 +9,6 @@ import Chat from "./Chat/Chat";
 import { ChatAppContect } from "../../Context/ChatAppContext";
 
 const Friend = () => {
-  // const array = [1, 2, 34, 5, 6];/
-
   const {
     sendMessage,
     account,
@@ -27,17 +25,25 @@ const Friend = () => {
   return (
     <div className={Style.Friend}>
       <div className={Style.Friend_box}>
+        {/* Left Side - Friend List */}
         <div className={Style.Friend_box_left}>
-          {friendLists.map((el, i) => (
-            <Card
-              key={i + 1}
-              el={el}
-              i={i}
-              readMessage={readMessage}
-              readUser={readUser}
-            />
-          ))}
+          <h3 className={Style.section_title}>Friends</h3>
+          {friendLists && friendLists.length > 0 ? (
+            friendLists.map((el, i) => (
+              <Card
+                key={i}
+                el={el}
+                i={i}
+                readMessage={readMessage}
+                readUser={readUser}
+              />
+            ))
+          ) : (
+            <p className={Style.no_friends}>No friends added yet.</p>
+          )}
         </div>
+
+        {/* Right Side - Chat Section */}
         <div className={Style.Friend_box_right}>
           <Chat
             functionName={sendMessage}

@@ -29,8 +29,14 @@ const NavBar = () => {
   const [open, setOpen] = useState(false);
   const [openModel, setOpenModel] = useState(false);
 
-  const { account, userName, connectWallet, createAccount, error,tokenBalance } =
-    useContext(ChatAppContect);
+  const {
+    account,
+    userName,
+    connectWallet,
+    createAccount,
+    error,
+    tokenBalance,
+  } = useContext(ChatAppContect);
   return (
     <div className={Style.NavBar}>
       <div className={Style.NavBar_box}>
@@ -89,28 +95,33 @@ const NavBar = () => {
 
           {/* CONNECT WALLET */}
           <div className={Style.NavBar_box_right_connect}>
-  {account == "" ? (
-    <button onClick={() => connectWallet()}>
-      <span>Connect Wallet</span>
-    </button>
-  ) : (
-    <div className={Style.connectedSection}>
-      <button onClick={() => setOpenModel(true)}>
-        <Image
-          src={userName ? images.accountName : images.create2}
-          alt="Account image"
-          width={20}
-          height={20}
-        />
-        <small>{userName || "Create Account"}</small>
-      </button>
+            {account === "" ? (
+              <button onClick={() => connectWallet()}>
+                <span>Connect Wallet</span>
+              </button>
+            ) : (
+              <div className={Style.connectedSection}>
+                <div className={Style.accountTokenWrapper}>
+                  <button
+                    onClick={() => setOpenModel(true)}
+                    className={Style.accountBtn}
+                  >
+                    <Image
+                      src={userName ? images.accountName : images.create2}
+                      alt="Account image"
+                      width={20}
+                      height={20}
+                    />
+                    <small>{userName || "Create Account"}</small>
+                  </button>
 
-      <div className={Style.tokenBalance}>
-        💰 <span>{tokenBalance}</span> TOK
-      </div>
-    </div>
-  )}
-</div>
+                  <div className={Style.tokenBalance}>
+                    💰 <span>{tokenBalance}</span> TOK
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
 
           <div
             className={Style.NavBar_box_right_open}

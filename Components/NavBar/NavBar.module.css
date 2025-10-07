@@ -103,6 +103,52 @@
     backdrop-filter: blur(8px);
 }
 
+.connectedSection {
+  display: flex;
+  align-items: center;
+}
+
+.accountTokenWrapper {
+  display: flex;
+  align-items: center;
+  gap: 1rem; /* space between user and token balance */
+}
+
+.accountBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: linear-gradient(90deg, #F18303, #FFAB38);
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+}
+
+.accountBtn:hover {
+  background: linear-gradient(90deg, #FFAB38, #F18303);
+  transform: translateY(-2px);
+}
+
+.tokenBalance {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 0.4rem 0.8rem;
+  border-radius: 8px;
+  font-weight: 600;
+  color: #f18303;
+  box-shadow: 0 2px 8px rgba(241, 131, 3, 0.3);
+  transition: all 0.3s ease-in-out;
+}
+
+.tokenBalance:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(241, 131, 3, 0.45);
+}
+
+
 @media only screen and (max-width: 35em) {
     .NavBar {
         width: 90%;
