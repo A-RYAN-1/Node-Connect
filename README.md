@@ -51,13 +51,15 @@ Follow these steps to get the project running on your local machine.
 
 3.  **Deploy the Smart Contract**
     The smart contract needs to be deployed to the **Holesky testnet**. You will need some Holesky ETH from a faucet to cover the gas fees.
+    ```bash
+    npm run deploy
+    ```
+    This will give you Contract Address say x, copy x and paste it in .env.local's NEXT_PUBLIC_CONTRACT_ADDRESS.
+    And after that replace ChatApp.json in Context folder with ChatApp.json in artifacts folder's contracts.
 
     > **Note on Local Testing with Hardhat**: Recent versions of Next.js may have compatibility issues with Hardhat's local development environment. If you wish to test the smart contract locally using Hardhat, you may need to **downgrade the Next.js version** in the `package.json` file. For this guide, we are proceeding with the Holesky testnet.
 
-4.  **Configure Contract Address & ABI**
-    After deploying, update the `Context/constants.js` file with your new smart contract address and ABI.
-
-5.  **Run the Application**
+4.  **Run the Application**
     ```bash
     npm run dev
     ```
