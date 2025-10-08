@@ -18,7 +18,7 @@ const Model = ({
   functionName,
 }) => {
   const [name, setName] = useState("");
-  const [userAddress, setUserAddress] = useState(address);
+  const [userAddress, setUserAddress] = useState(address || "");
 
   const { loading } = useContext(ChatAppContect);
 

@@ -11,7 +11,7 @@ import images from "../../assets";
 const NavBar = () => {
   const menuItems = [
     {
-      menu: "All Users",
+      menu: "Add Friends",
       link: "alluser",
     },
     {
@@ -134,18 +134,16 @@ const NavBar = () => {
 
       {/* MODEL COMPONENT */}
       {openModel && (
-        <div className={Style.modelBox}>
-          <Model
-            openBox={setOpenModel}
-            title="WELCOME TO"
-            head="Node Connect"
-            info="Your Decentralized Chat Application with Tokenized Incentives"
-            smallInfo="Kindly select your name..."
-            image={images.hero}
-            functionName={createAccount}
-            address={account}
-          />
-        </div>
+        <Model
+          openBox={setOpenModel}
+          title="WELCOME TO"
+          head="Node Connect"
+          info="Your Decentralized Chat Application with Tokenized Incentives"
+          smallInfo="Kindly select your name..."
+          image={images.hero}
+          functionName={createAccount}
+          address={account}
+        />
       )}
       {error == "" ? "" : <Error error={error} />}
     </div>
