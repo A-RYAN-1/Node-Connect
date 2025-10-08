@@ -106,3 +106,16 @@ Contributions are welcome! If you'd like to contribute, please follow these step
 3.  Commit your changes (`git commit -m "Add some AmazingFeature"`).
 4.  Push to the branch (`git push origin feature/AmazingFeature`).
 5.  Open a **Pull Request**.
+
+---
+
+## 📷 Working Demo
+
+Account Creation :-
+https://github.com/user-attachments/assets/43d3d235-4ac0-4a97-ad3a-c0e051cf8d9f
+
+Adding Friends :- 
+https://github.com/user-attachments/assets/3ce3d386-fd47-40f3-bfa0-f8130f7e015f
+
+Chatting & Rewards :-
+https://github.com/user-attachments/assets/969e8a48-07a7-49d1-84f5-1f372f9aaae2
