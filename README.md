@@ -128,3 +128,7 @@ https://github.com/user-attachments/assets/969e8a48-07a7-49d1-84f5-1f372f9aaae2
 ## 🔴 Live Working
 
 https://node-connect-pid4.netlify.app/
+
+Currently this is down as Holesky is taken down, so we have migrated our project to Hoodi, and you can check the live working on this URL below :-
+
+https://extraordinary-capybara-67f36c.netlify.app/
