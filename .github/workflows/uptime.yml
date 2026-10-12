@@ -1,0 +1,25 @@
+name: Uptime
+
+# Daily check that the live site serves the app. A failed run emails the
+# repository owner.
+on:
+  schedule:
+    - cron: "17 6 * * *"
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    env:
+      URL: https://node-connect-sigma.vercel.app
+    steps:
+      - name: Every page answers 200 and serves the app
+        run: |
+          for path in / /alluser /leaderboard; do
+            code=$(curl -s -o page.html -w '%{http_code}' --retry 3 --retry-delay 10 "$URL$path")
+            echo "$path $code"
+            test "$code" = 200
+            grep -q "Node Connect" page.html
+          done

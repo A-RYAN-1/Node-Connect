@@ -1,127 +1,146 @@
 # Node Connect - Decentralized Chat Application 💬⛓️
 
-The decentralized chat application aims to offer an immutable, privacy-focused, and highly resilient alternative to traditional messaging platforms, ensuring uninterrupted and tamper-proof communication. Additionally, users are rewarded with crypto tokens for their activity and transactions on the application. These tokens will be listed on exchanges in the future, allowing users to trade them at market price.
+[![CI](https://github.com/A-RYAN-1/Node-Connect/actions/workflows/ci.yml/badge.svg)](https://github.com/A-RYAN-1/Node-Connect/actions/workflows/ci.yml)
+[![Uptime](https://github.com/A-RYAN-1/Node-Connect/actions/workflows/uptime.yml/badge.svg)](https://github.com/A-RYAN-1/Node-Connect/actions/workflows/uptime.yml)
+
+A decentralised chat application on Ethereum: an immutable, tamper-proof alternative to traditional messaging platforms. Accounts, friendships and messages live in a smart contract, you sign in with MetaMask, and the contract rewards you with tokens for being active.
+
+**Live:** https://node-connect-sigma.vercel.app (Hoodi testnet)
 
 ---
 
 ## ✨ Features
 
--   **Decentralized Chat**: Send and receive messages securely on the Ethereum blockchain.
--   **Token Rewards**: Earn crypto tokens for engaging in chats and being active.
--   **Friend System**: Easily add and manage your list of friends.
+-   **Decentralized Chat**: Send and receive messages stored on the Ethereum blockchain.
+-   **Token Rewards**: Earn tokens for creating an account, adding friends and chatting.
+-   **Friend System**: Add registered users as friends; the friendship is recorded both ways.
 -   **User Leaderboard**: View top users ranked by their token balance.
--   **MetaMask Integration**: Seamlessly connect your wallet to access the app.
--   **Mobile & Desktop Support**: Fully responsive UI for a great experience on any device.
-
----
-
-## 📋 Prerequisites
-
--   **Node.js**: Version `18.x` or higher.
--   **npm** or **yarn**.
--   **MetaMask**: Browser extension installed and configured.
--   **An Ethereum Testnet**: This project is configured to work with the **Holesky testnet**.
+-   **MetaMask Integration**: Connect your wallet; the app switches MetaMask to the right network for you.
+-   **Mobile & Desktop Support**: Responsive UI for any device.
 
 ---
 
 ## 🛠️ Tech Stack
 
--   **Frontend**: React.js, Next.js, CSS Modules
--   **Blockchain**: Ethereum, Solidity, Ethers.js, Web3Modal
--   **Backend**: Smart Contracts deployed on the Ethereum **Holesky Testnet**
--   **Development Tools**: VS Code
-
----
-
-## 🚀 Project Setup
-
-Follow these steps to get the project running on your local machine.
-
-1.  **Clone the Repository**
-    ```bash
-    git clone https://github.com/A-RYAN-1/Node-Connect.git
-    cd node-connect
-    ```
-
-2.  **Set the Environment Variables**
-    Copy `.env.example` to `.env` and fill it in (see *Environment variables* below). `.env` is git-ignored; never commit it.
-    ```bash
-    cp .env.example .env
-    ```
-
-3.  **Install Dependencies**
-    This will install all the necessary packages, including Ethers.js and Web3Modal.
-    ```bash
-    npm install
-    ```
-
-4.  **Deploy the Smart Contract**
-    The smart contract needs to be deployed to the **Holesky testnet**. You will need some Holesky ETH from a faucet to cover the gas fees.
-    ```bash
-    npm run deploy
-    ```
-    This will give you Contract Address say x, copy x and paste it in `.env` as `NEXT_PUBLIC_CONTRACT_ADDRESS`.
-    And after that replace ChatApp.json in Context folder with ChatApp.json in artifacts folder's contracts.
-
-    > **Note on Local Testing with Hardhat**: Recent versions of Next.js may have compatibility issues with Hardhat's local development environment. If you wish to test the smart contract locally using Hardhat, you may need to **downgrade the Next.js version** in the `package.json` file. For this guide, we are proceeding with the Holesky testnet.
-
-5.  **Run the Application**
-    ```bash
-    npm run dev
-    ```
-    Open **[http://localhost:3000](http://localhost:3000)** in your browser to see the application running.
-
-### Environment variables
-
-| Variable | Used by | What it is |
-|---|---|---|
-| `HOLESKY_URL` | Hardhat (`npm run deploy`) | RPC URL of the testnet node to deploy through (Alchemy, Infura or similar) |
-| `HOLESKY_URL_OPTIONAL` | Hardhat | Fallback RPC URL, used when `HOLESKY_URL` is empty |
-| `PRIVATE_KEY` | Hardhat | Private key of a fresh deployer wallet that only holds testnet ETH |
-| `NEXT_PUBLIC_CONTRACT_ADDRESS` | Frontend | Address of the deployed `ChatApp` contract |
-| `NEXT_PUBLIC_NETWORK` | Frontend | Network key from `Context/constants.js` that MetaMask is switched to |
-
----
-
-## 📖 Usage
-
--   **Connect Wallet**: Click the “Connect Wallet” button and approve the connection request from MetaMask.
--   **Create Account**: Enter a username to register your wallet address on the platform.
--   **Add Friends**: Browse the list of registered users and add them as friends.
--   **Send Messages**: Select a friend from your list to open the chat window and start sending messages.
--   **Earn Tokens**: Tokens are automatically rewarded for sending messages, as configured in the smart contract.
--   **View Leaderboard**: Check the leaderboard to see the top users ranked by their token balances.
+-   **Frontend**: Next.js 16 (static export), React 18, CSS Modules
+-   **Blockchain**: Solidity 0.8.19, Hardhat, ethers.js 6, MetaMask
+-   **Network**: Ethereum **Hoodi testnet** (Holesky, used before, was retired in 2025)
+-   **Hosting**: Vercel (static files only; there is no server)
+-   **Tooling**: Node 22 pinned with [mise](https://mise.jdx.dev), ESLint, GitHub Actions
 
 ---
 
 ## ⚙️ How It Works
 
-### Wallet Integration
-The application checks if MetaMask is installed and prompts the user to connect their wallet. It uses `handleNetworkSwitch()` to ensure the user is connected to the correct network (Holesky).
+The whole backend is one contract, `contracts/ChatApp.sol`. It stores each user's name and friend list, every chat as an array of messages keyed by the hash of the two addresses, and a reward balance per address (5 tokens for an account, 1 per friendship and 1 per message for both sides). The frontend is a static Next.js export with no server: it reads the contract directly from the browser through MetaMask (`Utils/apiFeature.js`), and every write (create account, add friend, send message) is a transaction the user signs. `Context/ChatAppContext.js` holds the app state and refreshes it after each transaction is mined. Configuration is read once, in `Context/config.js`, which stops the build with a clear message when a variable is missing or wrong.
 
-### Smart Contract Interaction
-Ethers.js is used to communicate with the deployed smart contract. All key actions like creating an account, sending a message, and adding a friend are processed as transactions on the blockchain. User data and messages are read directly from the contract's state.
-
-### Token Reward System
-The smart contract includes logic to reward users with tokens for performing certain actions, such as sending a message. This encourages user engagement and platform activity.
-
-### React Context
-The `ChatAppContext` manages the global state of the application, including the user's account information, messages, friends list, and token balance, making this data accessible across all components.
-
-### Frontend
-The user interface is built with Next.js and styled using CSS Modules for a responsive and modern look. The UI is composed of several key components: `NavBar`, `FriendList`, `Chat`, `UserCard`, `Loader`, `Model`, and `Error`.
+```
+Browser (Next.js static site on Vercel)
+   │  MetaMask signs transactions, ethers.js encodes calls
+   ▼
+ChatApp contract on Hoodi ── accounts, friends, messages, rewards
+```
 
 ---
 
-## 🤝 Contributing
+## 🚀 Run It Locally
 
-Contributions are welcome! If you'd like to contribute, please follow these steps:
+**Prerequisites:** Git, [mise](https://mise.jdx.dev) (or Node 22 installed another way), and the MetaMask browser extension.
 
-1.  **Fork** the repository.
-2.  Create your feature branch (`git checkout -b feature/AmazingFeature`).
-3.  Commit your changes (`git commit -m "Add some AmazingFeature"`).
-4.  Push to the branch (`git push origin feature/AmazingFeature`).
-5.  Open a **Pull Request**.
+1.  **Clone the repository**
+    ```bash
+    git clone https://github.com/A-RYAN-1/Node-Connect.git
+    cd Node-Connect
+    ```
+
+2.  **Install Node 22 and the dependencies**
+    ```bash
+    mise install   # reads mise.toml
+    npm ci
+    ```
+
+3.  **Set the environment variables**
+    ```bash
+    cp .env.example .env
+    ```
+    The defaults point at the public Hoodi deployment, so the app works without changing anything. `.env` is git-ignored; never commit it.
+
+4.  **Start the app**
+    ```bash
+    npm run dev
+    ```
+    Open [http://localhost:3000](http://localhost:3000), connect MetaMask and approve the switch to Hoodi. Creating an account and sending messages cost a little Hoodi ETH, which is free from a Hoodi faucet.
+
+### Run everything on a local chain (no testnet ETH needed)
+
+```bash
+npm run node            # terminal 1: local Hardhat chain on http://127.0.0.1:8545
+npm run deploy-local    # terminal 2: prints the contract address
+```
+
+Set `NEXT_PUBLIC_CONTRACT_ADDRESS` to the printed address and `NEXT_PUBLIC_NETWORK=localhost` in `.env`, run `npm run dev`, and import one of the test accounts `npm run node` prints into MetaMask. Those accounts and keys are public and only for the local chain.
+
+### Deploy your own contract to Hoodi
+
+1.  Create a fresh MetaMask account that will only ever hold testnet ETH, and fund it from a Hoodi faucet.
+2.  Put its private key in `.env` as `DEPLOYER_PRIVATE_KEY` (optionally an Alchemy or Infura URL as `HOODI_RPC_URL`).
+3.  Run `npm run deploy` and set `NEXT_PUBLIC_CONTRACT_ADDRESS` to the address it prints.
+4.  If you changed the contract, run `npm run abi` so the frontend uses the new ABI.
+
+---
+
+## 🔑 Environment Variables
+
+All of them are listed with comments in [`.env.example`](.env.example).
+
+| Variable | Needed for | What it is |
+|---|---|---|
+| `NEXT_PUBLIC_CONTRACT_ADDRESS` | the app (build time) | Address of the deployed `ChatApp` contract. Public. |
+| `NEXT_PUBLIC_NETWORK` | the app (build time) | Network MetaMask is switched to: `hoodi`, `sepolia` or `localhost` (see `Context/networks.js`). Public. |
+| `HOODI_RPC_URL` | `npm run deploy` | Hoodi RPC URL. Optional; defaults to the free public node. |
+| `DEPLOYER_PRIVATE_KEY` | `npm run deploy` | Key of a testnet-only deployer wallet. Secret: only in your local `.env`, never on the host. |
+
+`NEXT_PUBLIC_` values are compiled into the public JavaScript, so they must never hold a secret.
+
+---
+
+## 🧪 Scripts and Tests
+
+| Command | What it does |
+|---|---|
+| `npm run dev` | Start the app on port 3000 |
+| `npm run build` | Static export to `out/` |
+| `npm run lint` | ESLint (Next.js core web vitals rules) |
+| `npm test` | Contract tests (Hardhat, 9 tests: accounts, friends, messages, mining) |
+| `npm run abi` | Compile and copy the contract ABI into `Context/ChatApp.json` |
+| `npm run deploy` / `deploy-local` | Deploy the contract to Hoodi / the local chain |
+
+GitHub Actions runs lint, the contract tests, an ABI freshness check and the build on every push (`ci.yml`), and checks once a day that the live site answers (`uptime.yml`).
+
+---
+
+## ☁️ Deployment
+
+The site is a static export hosted on Vercel's free Hobby plan. To host your own copy:
+
+1.  Import the repository in Vercel (framework: Next.js, no root directory).
+2.  Set `NEXT_PUBLIC_CONTRACT_ADDRESS` and `NEXT_PUBLIC_NETWORK` in the project's Environment Variables for Production and Preview. Nothing secret is needed.
+3.  Deploy. `vercel.json` adds security headers; `.vercelignore` keeps env files and build output out of CLI uploads.
+
+**Measured on the live site** (Lighthouse, 2026-10-12, mobile / desktop): performance 89-90 / 99, accessibility 100 / 100, best practices 100 / 100, SEO 100 / 100.
+
+`npm audit --omit=dev` reports no vulnerabilities in what ships to the browser. The remaining `npm audit` findings are in Hardhat's development toolchain, which only runs locally and in CI.
+
+---
+
+## 📖 Usage
+
+-   **Connect Wallet**: Click "Connect Wallet" and approve the connection request in MetaMask.
+-   **Create Account**: Enter a username to register your wallet address on the platform.
+-   **Add Friends**: Browse the list of registered users and add them as friends.
+-   **Send Messages**: Select a friend to open the chat and send messages (Enter sends).
+-   **Earn Tokens**: Tokens are rewarded automatically by the smart contract.
+-   **View Leaderboard**: See the top users ranked by their token balances.
 
 ---
 
@@ -131,7 +150,7 @@ Account Creation :-
 
 https://github.com/user-attachments/assets/43d3d235-4ac0-4a97-ad3a-c0e051cf8d9f
 
-Adding Friends :- 
+Adding Friends :-
 
 https://github.com/user-attachments/assets/3ce3d386-fd47-40f3-bfa0-f8130f7e015f
 
@@ -141,10 +160,17 @@ https://github.com/user-attachments/assets/969e8a48-07a7-49d1-84f5-1f372f9aaae2
 
 ---
 
-## 🔴 Live Working
+## 🤝 Contributing
 
-https://node-connect-pid4.netlify.app/
+Contributions are welcome:
 
-Currently this is down as Holesky is taken down, so we have migrated our project to Hoodi, and you can check the live working on this URL below :-
+1.  **Fork** the repository.
+2.  Create a feature branch (`git checkout -b feature/AmazingFeature`).
+3.  Run `npm run lint`, `npm test` and `npm run build` before committing.
+4.  Push the branch and open a **Pull Request**; CI runs the same checks.
 
-https://extraordinary-capybara-67f36c.netlify.app/
+---
+
+## 📄 License
+
+[MIT](LICENSE)
