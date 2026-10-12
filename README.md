@@ -43,27 +43,43 @@ Follow these steps to get the project running on your local machine.
     cd node-connect
     ```
 
-2.  **Install Dependencies**
+2.  **Set the Environment Variables**
+    Copy `.env.example` to `.env` and fill it in (see *Environment variables* below). `.env` is git-ignored; never commit it.
+    ```bash
+    cp .env.example .env
+    ```
+
+3.  **Install Dependencies**
     This will install all the necessary packages, including Ethers.js and Web3Modal.
     ```bash
     npm install
     ```
 
-3.  **Deploy the Smart Contract**
+4.  **Deploy the Smart Contract**
     The smart contract needs to be deployed to the **Holesky testnet**. You will need some Holesky ETH from a faucet to cover the gas fees.
     ```bash
     npm run deploy
     ```
-    This will give you Contract Address say x, copy x and paste it in .env.local's NEXT_PUBLIC_CONTRACT_ADDRESS.
+    This will give you Contract Address say x, copy x and paste it in `.env` as `NEXT_PUBLIC_CONTRACT_ADDRESS`.
     And after that replace ChatApp.json in Context folder with ChatApp.json in artifacts folder's contracts.
 
     > **Note on Local Testing with Hardhat**: Recent versions of Next.js may have compatibility issues with Hardhat's local development environment. If you wish to test the smart contract locally using Hardhat, you may need to **downgrade the Next.js version** in the `package.json` file. For this guide, we are proceeding with the Holesky testnet.
 
-4.  **Run the Application**
+5.  **Run the Application**
     ```bash
     npm run dev
     ```
     Open **[http://localhost:3000](http://localhost:3000)** in your browser to see the application running.
+
+### Environment variables
+
+| Variable | Used by | What it is |
+|---|---|---|
+| `HOLESKY_URL` | Hardhat (`npm run deploy`) | RPC URL of the testnet node to deploy through (Alchemy, Infura or similar) |
+| `HOLESKY_URL_OPTIONAL` | Hardhat | Fallback RPC URL, used when `HOLESKY_URL` is empty |
+| `PRIVATE_KEY` | Hardhat | Private key of a fresh deployer wallet that only holds testnet ETH |
+| `NEXT_PUBLIC_CONTRACT_ADDRESS` | Frontend | Address of the deployed `ChatApp` contract |
+| `NEXT_PUBLIC_NETWORK` | Frontend | Network key from `Context/constants.js` that MetaMask is switched to |
 
 ---
 
