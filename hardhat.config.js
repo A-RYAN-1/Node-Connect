@@ -1,6 +1,9 @@
-// hardhat.config.js
 require("@nomicfoundation/hardhat-toolbox");
 require("dotenv").config();
+
+// Deployment settings come from .env (see .env.example). They are only
+// needed for `npm run deploy`; compile and test run without them.
+const { HOODI_RPC_URL, DEPLOYER_PRIVATE_KEY } = process.env;
 
 /** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {
@@ -9,17 +12,10 @@ module.exports = {
     hardhat: {
       chainId: 1337,
     },
-    holesky: {
-      url: process.env.HOLESKY_URL || process.env.HOLESKY_URL_OPTIONAL,
-      accounts:
-        process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
-      chainId: 17000,
+    hoodi: {
+      url: HOODI_RPC_URL || "https://ethereum-hoodi-rpc.publicnode.com",
+      accounts: DEPLOYER_PRIVATE_KEY ? [DEPLOYER_PRIVATE_KEY] : [],
+      chainId: 560048,
     },
-  },
-  paths: {
-    artifacts: "./artifacts",
-    sources: "./contracts",
-    cache: "./cache",
-    tests: "./test",
   },
 };

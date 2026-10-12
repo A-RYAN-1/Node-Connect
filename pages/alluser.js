@@ -1,10 +1,10 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useContext } from "react";
 //INTRNAL IMPORT
 import { UserCard } from "../Components/index";
 import Style from "../styles/alluser.module.css";
 import { ChatAppContect } from "../Context/ChatAppContext";
 
-const alluser = () => {
+const AllUser = () => {
   const { userLists, addFriends } = useContext(ChatAppContect);
 
   return (
@@ -15,11 +15,11 @@ const alluser = () => {
 
       <div className={Style.alluser}>
         {userLists.map((el, i) => (
-          <UserCard key={i + 1} el={el} i={i} addFriends={addFriends} />
+          <UserCard key={el.accountAddress} el={el} i={i} addFriends={addFriends} />
         ))}
       </div>
     </div>
   );
 };
 
-export default alluser;
+export default AllUser;

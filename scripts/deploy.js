@@ -1,12 +1,18 @@
 const hre = require("hardhat");
 
 async function main() {
-  const ChatApp = await hre.ethers.getContractFactory("ChatApp");
-  const chatApp = await ChatApp.deploy();
+  const [deployer] = await hre.ethers.getSigners();
+  if (!deployer) {
+    throw new Error(
+      `No deployer account for ${hre.network.name}: set DEPLOYER_PRIVATE_KEY in .env`
+    );
+  }
 
-  await chatApp.deployed();
+  const chatApp = await hre.ethers.deployContract("ChatApp");
+  await chatApp.waitForDeployment();
 
-  console.log(` Contract Address: ${chatApp.address}`);
+  console.log(`ChatApp deployed to ${await chatApp.getAddress()} on ${hre.network.name}`);
+  console.log("Set NEXT_PUBLIC_CONTRACT_ADDRESS to this address in .env");
 }
 
 main().catch((error) => {

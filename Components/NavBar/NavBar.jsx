@@ -35,6 +35,7 @@ const NavBar = () => {
     connectWallet,
     createAccount,
     error,
+    clearError,
     tokenBalance,
   } = useContext(ChatAppContect);
   return (
@@ -145,7 +146,7 @@ const NavBar = () => {
           address={account}
         />
       )}
-      {error == "" ? "" : <Error error={error} />}
+      {error && <Error error={error} onClose={clearError} />}
     </div>
   );
 };

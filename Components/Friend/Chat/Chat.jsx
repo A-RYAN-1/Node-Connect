@@ -20,20 +20,26 @@ const Chat = ({
   readUser,
 }) => {
   const [message, setMessage] = useState("");
-  const [chatData, setChatData] = useState({ name: "", address: "" });
   const router = useRouter();
-
-  useEffect(() => {
-    if (!router.isReady) return;
-    setChatData(router.query);
-  }, [router.isReady]);
+  // The open chat comes from the URL (?name=...&address=...)
+  const chatData = {
+    name: router.query.name || "",
+    address: router.query.address || "",
+  };
 
   useEffect(() => {
     if (chatData.address) {
       readMessage(chatData.address);
       readUser(chatData.address);
     }
-  }, [chatData.address]);
+  }, [chatData.address, readMessage, readUser]);
+
+  const send = async () => {
+    const text = message.trim();
+    if (!text) return;
+    await functionName({ msg: text, address: chatData.address });
+    setMessage("");
+  };
 
   return (
     <div className={Style.Chat}>
@@ -96,6 +102,9 @@ const Chat = ({
                 placeholder="Type your message..."
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !loading) send();
+                }}
               />
 
               {loading ? (
@@ -107,12 +116,9 @@ const Chat = ({
                   width={45}
                   height={45}
                   className={Style.send_icon}
-                  onClick={() =>
-                    functionName({
-                      msg: message,
-                      address: router.query.address,
-                    })
-                  }
+                  role="button"
+                  tabIndex={0}
+                  onClick={send}
                 />
               )}
             </div>

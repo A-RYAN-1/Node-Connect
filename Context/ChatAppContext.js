@@ -1,17 +1,22 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/router";
 
-//INTERNAL IMPORT
 import {
-  ChechIfWalletConnected,
-  connectWallet,
+  checkIfWalletConnected,
+  connectWallet as requestWallet,
   connectingWithContract,
+  hasWallet,
+  toUser,
+  toFriend,
+  toMessage,
+  errorMessage,
 } from "../Utils/apiFeature";
 
 export const ChatAppContect = React.createContext();
 
+const sameAddress = (a, b) => a.toLowerCase() === b.toLowerCase();
+
 export const ChatAppProvider = ({ children }) => {
-  //USESTATE
   const [account, setAccount] = useState("");
   const [userName, setUserName] = useState("");
   const [friendLists, setFriendLists] = useState([]);
@@ -20,170 +25,145 @@ export const ChatAppProvider = ({ children }) => {
   const [userLists, setUserLists] = useState([]);
   const [userListsforleaderboard, setUserListsforleaderboard] = useState([]);
   const [tokenBalance, setTokenBalance] = useState(0);
-const [userListsforfind, setUserListsforfind] = useState([]);
-
   const [error, setError] = useState("");
 
-  //CHAT USER DATA
+  // The friend whose chat is open
   const [currentUserName, setCurrentUserName] = useState("");
   const [currentUserAddress, setCurrentUserAddress] = useState("");
 
   const router = useRouter();
 
-  //FETCH DATA TIME OF PAGE LOAD
-  const fetchData = async () => {
-    try {
-      const address = await ChechIfWalletConnected();
-      if (address) {
-        //GET CONTRACT
-        const contract = await connectingWithContract();
-        //GET ACCOUNT
-        const connectAccount = await connectWallet();
-        setAccount(connectAccount);
-        //GET USER NAME
-        const userName = await contract.getUsername(connectAccount);
-        setUserName(userName);
-        //GET MY FRIEND LIST
-        const friendLists = await contract.getMyFriendList();
-        setFriendLists(friendLists);
+  const loadAccount = useCallback(async (address) => {
+    const contract = await connectingWithContract();
 
-        //GET ALL APP USER LIST
-        const userList = await contract.getAllAppUser();
-        const userListforleaderboard = await contract.getAllAppUser();
-        const newarray2 = await contract.getAllAppUser();
-        const userListforfind = newarray2.filter(
-          (user) => user.accountAddress.toLowerCase() !== address
-        );
-        setUserListsforfind(userListsforfind);
-        const newArray = userList.filter(
+    const registered = await contract.checkUserExists(address);
+    const [allUsers, friends] = await Promise.all([
+      contract.getAllAppUser().then((list) => list.map(toUser)),
+      registered
+        ? contract.getMyFriendList().then((list) => list.map(toFriend))
+        : [],
+    ]);
 
-          (user) => user.accountAddress.toLowerCase() !== address
-        );
-        const usersWithTokens = await Promise.all(
-    userListforleaderboard.map(async (user) => {
-    const balance = await contract.minerReward(user.accountAddress); // fetch token
-    return {
-      ...user,
-      tokens: balance.toNumber(), // convert BigNumber to number
-    };
-  })
-);
+    setUserName(registered ? await contract.getUsername(address) : "");
+    setFriendLists(friends);
 
-// optional: sort descending by tokens
-usersWithTokens.sort((a, b) => b.tokens - a.tokens);
+    // Users you can add: everyone except you and your friends
+    const friendAddresses = new Set(friends.map((f) => f.pubkey.toLowerCase()));
+    setUserLists(
+      allUsers.filter(
+        (u) =>
+          !sameAddress(u.accountAddress, address) &&
+          !friendAddresses.has(u.accountAddress.toLowerCase())
+      )
+    );
 
-        const filterArray = filterUsersExcludingFriends(newArray, friendLists);
-        console.log(filterArray);
-        setUserLists(filterArray);
-        setUserListsforleaderboard(usersWithTokens);
-        const balance = await contract.minerReward(address);
-      setTokenBalance(balance.toNumber()); // convert BigNumber to number
+    const rewards = await Promise.all(
+      allUsers.map((u) => contract.minerReward(u.accountAddress))
+    );
+    const leaderboard = allUsers
+      .map((u, i) => ({ ...u, tokens: Number(rewards[i]) }))
+      .sort((a, b) => b.tokens - a.tokens);
+    setUserListsforleaderboard(leaderboard);
 
-      }
-    } catch (error) {
-      // setError("Please Install And Connect Your Wallet");
-      console.log(error);
-    }
-  };
-
-  function filterUsersExcludingFriends(newArray, friendLists) {
-    const friendAddresses = new Set(friendLists.map((friend) => friend.pubkey));
-
-    return newArray.filter((user) => !friendAddresses.has(user.accountAddress));
-  }
-  useEffect(() => {
-    fetchData();
+    const mine = leaderboard.find((u) => sameAddress(u.accountAddress, address));
+    setTokenBalance(mine ? mine.tokens : 0);
   }, []);
 
-  //READ MESSAGE
-  const readMessage = async (friendAddress) => {
+  // Load the already-connected account (no MetaMask prompt) on page load
+  useEffect(() => {
+    checkIfWalletConnected()
+      .then(async (address) => {
+        if (!address) return;
+        setAccount(address);
+        await loadAccount(address);
+      })
+      .catch((err) => setError(errorMessage(err)));
+
+    if (!hasWallet()) return undefined;
+    // Reload the data when the user switches account in MetaMask
+    const onAccountsChanged = () => window.location.reload();
+    window.ethereum.on?.("accountsChanged", onAccountsChanged);
+    return () =>
+      window.ethereum.removeListener?.("accountsChanged", onAccountsChanged);
+  }, [loadAccount]);
+
+  const connectWallet = async () => {
     try {
-      const address = await ChechIfWalletConnected();
-      if (address) {
-        const contract = await connectingWithContract();
-        const read = await contract.readMessage(friendAddress);
-        setFriendMsg(read);
-      }
-    } catch (error) {
-      console.log("Currently You Have no Message");
+      const address = await requestWallet();
+      if (!address) return;
+      setAccount(address);
+      await loadAccount(address);
+    } catch (err) {
+      setError(errorMessage(err));
     }
   };
 
-  //CREATE ACCOUNT
+  // Sends a transaction, waits for it to be mined, then runs `after`
+  const runTransaction = async (send, after) => {
+    try {
+      const contract = await connectingWithContract();
+      const tx = await send(contract);
+      setLoading(true);
+      await tx.wait();
+      setLoading(false);
+      await after();
+    } catch (err) {
+      setLoading(false);
+      setError(errorMessage(err));
+    }
+  };
+
+  const readMessage = useCallback(async (friendAddress) => {
+    try {
+      const contract = await connectingWithContract();
+      const messages = await contract.readMessage(friendAddress);
+      setFriendMsg(messages.map(toMessage));
+    } catch (err) {
+      setError(errorMessage(err));
+    }
+  }, []);
+
   const createAccount = async ({ name }) => {
-    console.log(name, account);
-    try {
-      if (!name || !account)
-        return setError("Name And Account Address, cannot be empty");
-
-      const contract = await connectingWithContract();
-      console.log(contract);
-      const getCreatedUser = await contract.createAccount(name);
-
-      setLoading(true);
-      await getCreatedUser.wait();
-      setLoading(false);
-      window.location.reload();
-    } catch (error) {
-      setError("Error while creating your account Pleas reload browser");
-    }
+    if (!name?.trim() || !account)
+      return setError("Name and account address cannot be empty");
+    await runTransaction(
+      (contract) => contract.createAccount(name.trim()),
+      () => loadAccount(account)
+    );
   };
 
-  //ADD YOUR FRIENDS
   const addFriends = async ({ name, userAddress }) => {
-    console.log(name, userAddress);
-    try {
-      if (!name || !userAddress) return setError("Please provide data");
-      const contract = await connectingWithContract();
-      const addMyFriend = await contract.addFriend(userAddress, name);
-      setLoading(true);
-      await addMyFriend.wait();
-      setLoading(false);
-      router.push("/");
-      window.location.reload();
-    } catch (error) {
-      setError("Something went wrong while adding friends, try again");
-    }
+    if (!name || !userAddress) return setError("Please provide a name and address");
+    await runTransaction(
+      (contract) => contract.addFriend(userAddress, name),
+      async () => {
+        await loadAccount(account);
+        router.push("/");
+      }
+    );
   };
 
-  //SEND MESSAGE TO YOUR FRIEND
   const sendMessage = async ({ msg, address }) => {
+    if (!msg?.trim() || !address) return setError("Please type your message");
+    await runTransaction(
+      (contract) => contract.sendMessage(address, msg),
+      async () => {
+        await readMessage(address);
+        await loadAccount(account);
+      }
+    );
+  };
+
+  const readUser = useCallback(async (userAddress) => {
     try {
-      if (!msg || !address) return setError("Please Type your Message");
-
       const contract = await connectingWithContract();
-      const addMessage = await contract.sendMessage(address, msg);
-      setLoading(true);
-      await addMessage.wait();
-       console.log("Message sent successfully!");
-
-    // Call mining only ONCE
-    //const mineTx = await contract.mineMessageSafe(address, 1);
-    //const receipt = await mineTx.wait();
-
-    //const event = receipt.events.find(e => e.event === "MiningResult");
-    //if (event && event.args.success) {
-    //  console.log(`✅ Mining successful! Hash: ${event.args.hash}`);
-    //} else {
-     // console.log("⚠️ Mining failed or not successful");
-    //}
-
-    setLoading(false);
-      window.location.reload();
-    } catch (error) {
-      setError("Please reload and try again");
+      setCurrentUserName(await contract.getUsername(userAddress));
+      setCurrentUserAddress(userAddress);
+    } catch (err) {
+      setError(errorMessage(err));
     }
-  };
+  }, []);
 
-  //READ INFO
-  const readUser = async (userAddress) => {
-    const contract = await connectingWithContract();
-    const userName = await contract.getUsername(userAddress);
-   
-    setCurrentUserName(userName);
-    setCurrentUserAddress(userAddress);
-   
-  };
   return (
     <ChatAppContect.Provider
       value={{
@@ -193,7 +173,6 @@ usersWithTokens.sort((a, b) => b.tokens - a.tokens);
         sendMessage,
         readUser,
         connectWallet,
-        ChechIfWalletConnected,
         account,
         userName,
         friendLists,
@@ -201,10 +180,10 @@ usersWithTokens.sort((a, b) => b.tokens - a.tokens);
         userLists,
         loading,
         error,
+        clearError: () => setError(""),
         currentUserName,
         currentUserAddress,
         userListsforleaderboard,
-        userListsforfind,
         tokenBalance,
       }}
     >
