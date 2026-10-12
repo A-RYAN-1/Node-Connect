@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    env:
+      # Public values (see .env.example); the build fails without them
+      NEXT_PUBLIC_CONTRACT_ADDRESS: "0x1C562FBbeA759113364Bf1EF282af19Bd8FD1A9f"
+      NEXT_PUBLIC_NETWORK: hoodi
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - name: Contract tests
+        run: npm test
+      - name: ABI in Context/ matches the contract
+        run: |
+          node -e '
+            const a = require("./artifacts/contracts/ChatApp.sol/ChatApp.json").abi;
+            const b = require("./Context/ChatApp.json").abi;
+            if (JSON.stringify(a) !== JSON.stringify(b)) {
+              console.error("Context/ChatApp.json is stale: run npm run abi");
+              process.exit(1);
+            }'
+      - run: npm run build
