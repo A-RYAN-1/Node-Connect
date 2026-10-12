@@ -1,0 +1,10 @@
+# Vercel builds from source: never upload secrets, dependencies or build output
+.env
+.env.*
+!.env.example
+node_modules
+.next
+out
+artifacts
+cache
+.DS_Store
