@@ -6,6 +6,7 @@
 A decentralised chat application on Ethereum: an immutable, tamper-proof alternative to traditional messaging platforms. Accounts, friendships and messages live in a smart contract, you sign in with MetaMask, and the contract rewards you with tokens for being active.
 
 **Live:** https://node-connect-sigma.vercel.app (Hoodi testnet)
+**Contract:** [`0x1C562FBbeA759113364Bf1EF282af19Bd8FD1A9f`](https://hoodi.etherscan.io/address/0x1C562FBbeA759113364Bf1EF282af19Bd8FD1A9f) on Hoodi
 
 ---
 
@@ -69,7 +70,7 @@ ChatApp contract on Hoodi ── accounts, friends, messages, rewards
     ```bash
     npm run dev
     ```
-    Open [http://localhost:3000](http://localhost:3000), connect MetaMask and approve the switch to Hoodi. Creating an account and sending messages cost a little Hoodi ETH, which is free from a Hoodi faucet.
+    Open [http://localhost:3000](http://localhost:3000), connect MetaMask and approve the switch to Hoodi. Creating an account and sending messages cost a little Hoodi ETH, which is free from a Hoodi faucet, for example the [Google Cloud faucet](https://cloud.google.com/application/web3/faucet/ethereum/hoodi) or the [PoW faucet](https://hoodi-faucet.pk910.de/).
 
 ### Run everything on a local chain (no testnet ETH needed)
 
@@ -86,6 +87,22 @@ Set `NEXT_PUBLIC_CONTRACT_ADDRESS` to the printed address and `NEXT_PUBLIC_NETWO
 2.  Put its private key in `.env` as `DEPLOYER_PRIVATE_KEY` (optionally an Alchemy or Infura URL as `HOODI_RPC_URL`).
 3.  Run `npm run deploy` and set `NEXT_PUBLIC_CONTRACT_ADDRESS` to the address it prints.
 4.  If you changed the contract, run `npm run abi` so the frontend uses the new ABI.
+
+---
+
+## 🗂️ Project Structure
+
+```
+contracts/ChatApp.sol      the smart contract (accounts, friends, messages, rewards)
+test/ChatApp.test.js       contract tests (Hardhat)
+scripts/deploy.js          deploys the contract; export-abi.js copies the ABI to Context/
+Context/config.js          reads and checks every environment variable (the only place that does)
+Context/networks.js        networks MetaMask can be switched to
+Context/ChatAppContext.js  app state, refreshed after each mined transaction
+Utils/apiFeature.js        MetaMask connection and the contract instance
+Components/                UI components (NavBar, Friend list and Chat, UserCard, Model, ...)
+pages/                     routes: / (chat), /alluser (find friends), /leaderboard
+```
 
 ---
 
@@ -133,6 +150,16 @@ The site is a static export hosted on Vercel's free Hobby plan. To host your own
 
 ---
 
+## 🩺 Troubleshooting
+
+-   **The build stops with a config error.** `Context/config.js` checks the variables; copy `.env.example` to `.env` (or set them on the host) and build again.
+-   **MetaMask shows the wrong network.** Click Connect Wallet again and approve the network switch; the app adds Hoodi to MetaMask if it is missing.
+-   **A transaction fails with "insufficient funds".** The account needs a little Hoodi ETH; use one of the faucets above.
+-   **Local chain: MetaMask reports a nonce error after restarting `npm run node`.** The chain was reset; in MetaMask, Settings, Advanced, clear the activity data for that account.
+-   **`npm ci` fails on Node 18 or 20.** The project needs Node 22 (`mise install`).
+
+---
+
 ## 📖 Usage
 
 -   **Connect Wallet**: Click "Connect Wallet" and approve the connection request in MetaMask.
@@ -157,6 +184,16 @@ https://github.com/user-attachments/assets/3ce3d386-fd47-40f3-bfa0-f8130f7e015f
 Chatting & Rewards :-
 
 https://github.com/user-attachments/assets/969e8a48-07a7-49d1-84f5-1f372f9aaae2
+
+---
+
+## 🧭 Status and Roadmap
+
+Production baseline reached on 2026-10-12: Next.js 16 and ethers 6, contract tests, lint and build in CI, a config module with checked environment variables, security headers, a daily uptime check and Lighthouse scores above. Next steps, one at a time:
+
+-   [ ] Faster first load on mobile: the GIFs in `assets/` weigh about 14 MB; convert them to video or WebP.
+-   [ ] Deploy automatically on every push to `main` (Vercel Git integration).
+-   [ ] Frontend tests for the main flow (connect, create account, add friend, send message).
 
 ---
 
