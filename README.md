@@ -1,7 +1,7 @@
 # Node Connect - Decentralized Chat Application 💬⛓️
 
-[![CI](https://github.com/A-RYAN-1/Node-Connect/actions/workflows/ci.yml/badge.svg)](https://github.com/A-RYAN-1/Node-Connect/actions/workflows/ci.yml)
-[![Uptime](https://github.com/A-RYAN-1/Node-Connect/actions/workflows/uptime.yml/badge.svg)](https://github.com/A-RYAN-1/Node-Connect/actions/workflows/uptime.yml)
+[![CI](https://github.com/A-RYAN-1/node-connect/actions/workflows/ci.yml/badge.svg)](https://github.com/A-RYAN-1/node-connect/actions/workflows/ci.yml)
+[![Uptime](https://github.com/A-RYAN-1/node-connect/actions/workflows/uptime.yml/badge.svg)](https://github.com/A-RYAN-1/node-connect/actions/workflows/uptime.yml)
 
 A decentralised chat application on Ethereum: an immutable, tamper-proof alternative to traditional messaging platforms. Accounts, friendships and messages live in a smart contract, you sign in with MetaMask, and the contract rewards you with tokens for being active.
 
@@ -50,8 +50,8 @@ ChatApp contract on Hoodi ── accounts, friends, messages, rewards
 
 1.  **Clone the repository**
     ```bash
-    git clone https://github.com/A-RYAN-1/Node-Connect.git
-    cd Node-Connect
+    git clone https://github.com/A-RYAN-1/node-connect.git
+    cd node-connect
     ```
 
 2.  **Install Node 22 and the dependencies**
