@@ -5,7 +5,7 @@ const Error = ({ error, onClose }) => {
   return (
     <div className={styles.overlay}>
       <div className={styles.card}>
-        <div className={styles.icon}>⚠️</div>
+        <div className={styles.icon} aria-hidden="true">!</div>
         <h1 className={styles.title}>Something Went Wrong</h1>
         <p className={styles.message}>
           Please fix the following issue and try again:

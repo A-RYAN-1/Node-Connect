@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="8 -6 84 84" role="img" aria-label="Node Connect logo">
+  <g stroke="#2ec4b6" stroke-width="3.5" stroke-linecap="round">
+    <line x1="24" y1="34" x2="50" y2="8"/>
+    <line x1="50" y1="8" x2="50" y2="60"/>
+    <line x1="50" y1="60" x2="76" y2="34"/>
+  </g>
+  <g fill="#2ec4b6">
+    <circle cx="50" cy="8" r="10"/>
+    <circle cx="24" cy="34" r="10"/>
+    <circle cx="76" cy="34" r="10"/>
+    <circle cx="50" cy="60" r="10"/>
+  </g>
+</svg>

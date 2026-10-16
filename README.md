@@ -1,213 +1,369 @@
-# Node Connect - Decentralized Chat Application 💬⛓️
+<p align="center">
+  <img src="docs/images/logo.svg" width="88" alt="Node Connect logo">
+</p>
 
-[![CI](https://github.com/A-RYAN-1/node-connect/actions/workflows/ci.yml/badge.svg)](https://github.com/A-RYAN-1/node-connect/actions/workflows/ci.yml)
-[![Uptime](https://github.com/A-RYAN-1/node-connect/actions/workflows/uptime.yml/badge.svg)](https://github.com/A-RYAN-1/node-connect/actions/workflows/uptime.yml)
+<h1 align="center">Node Connect</h1>
 
-A decentralised chat application on Ethereum: an immutable, tamper-proof alternative to traditional messaging platforms. Accounts, friendships and messages live in a smart contract, you sign in with MetaMask, and the contract rewards you with tokens for being active.
+<p align="center">
+  A chat app whose whole backend is one Ethereum smart contract.<br>
+  Sign in with MetaMask, add friends and chat; every account, friendship and message is a transaction that earns both sides tokens.
+</p>
 
-**Live:** https://node-connect-sigma.vercel.app (Hoodi testnet)
-**Contract:** [`0x1C562FBbeA759113364Bf1EF282af19Bd8FD1A9f`](https://hoodi.etherscan.io/address/0x1C562FBbeA759113364Bf1EF282af19Bd8FD1A9f) on Hoodi
+<p align="center">
+  <a href="https://node-connect-sigma.vercel.app"><strong>Live demo</strong></a>
+  &middot;
+  <a href="#try-it-live">Try it</a>
+  &middot;
+  <a href="#how-it-works">How it works</a>
+  &middot;
+  <a href="#run-it-locally">Run locally</a>
+  &middot;
+  <a href="contracts/ChatApp.sol">The contract</a>
+</p>
+
+<p align="center">
+  <a href="https://github.com/A-RYAN-1/node-connect/actions/workflows/ci.yml"><img src="https://github.com/A-RYAN-1/node-connect/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="https://github.com/A-RYAN-1/node-connect/actions/workflows/uptime.yml"><img src="https://github.com/A-RYAN-1/node-connect/actions/workflows/uptime.yml/badge.svg" alt="Uptime"></a>
+  <img src="https://img.shields.io/badge/Solidity-0.8.19-363636?logo=solidity&logoColor=white" alt="Solidity 0.8.19">
+  <img src="https://img.shields.io/badge/Hardhat-2-FFF100?logo=hardhat&logoColor=black" alt="Hardhat 2">
+  <img src="https://img.shields.io/badge/Next.js-16-000000?logo=nextdotjs&logoColor=white" alt="Next.js 16">
+  <img src="https://img.shields.io/badge/ethers-6-2535A0?logo=ethereum&logoColor=white" alt="ethers 6">
+  <img src="https://img.shields.io/badge/network-Hoodi%20testnet-627EEA?logo=ethereum&logoColor=white" alt="Hoodi testnet">
+  <img src="https://img.shields.io/badge/hosted%20on-Vercel-000000?logo=vercel&logoColor=white" alt="Hosted on Vercel">
+</p>
+
+<p align="center">
+  <a href="https://node-connect-sigma.vercel.app">
+    <img src="docs/images/chat.png" width="90%" alt="Chat screen: friends list on the left, the chat with bob on the right, the account name and a 13 TOK balance in the header">
+  </a>
+</p>
+
+<p align="center"><sub>Last updated: 2026-10-16 &middot; Live on Vercel (free), contract on the Hoodi testnet &middot; a full rework is planned (see <a href="#status-and-roadmap">roadmap</a>)</sub></p>
 
 ---
 
-## ✨ Features
+## Contents
 
--   **Decentralized Chat**: Send and receive messages stored on the Ethereum blockchain.
--   **Token Rewards**: Earn tokens for creating an account, adding friends and chatting.
--   **Friend System**: Add registered users as friends; the friendship is recorded both ways.
--   **User Leaderboard**: View top users ranked by their token balance.
--   **MetaMask Integration**: Connect your wallet; the app switches MetaMask to the right network for you.
--   **Mobile & Desktop Support**: Responsive UI for any device.
+- [About](#about)
+- [Try it live](#try-it-live)
+- [Features](#features)
+- [Why it exists](#why-it-exists)
+- [How it works](#how-it-works)
+- [Engineering quality](#engineering-quality)
+- [Run it locally](#run-it-locally)
+- [Environment variables](#environment-variables)
+- [Deployment](#deployment)
+- [Status and roadmap](#status-and-roadmap)
+- [Credits](#credits)
 
----
+## About
 
-## 🛠️ Tech Stack
+Most chat apps keep your account and your messages on a company's servers. Node Connect keeps them
+in a smart contract instead: your wallet address is your account, a friendship is recorded on chain
+for both people, and each message is appended to the chat the two of you share. There is no server
+and no database; the website is static files that talk to the contract through MetaMask.
 
--   **Frontend**: Next.js 16 (static export), React 18, CSS Modules
--   **Blockchain**: Solidity 0.8.19, Hardhat, ethers.js 6, MetaMask
--   **Network**: Ethereum **Hoodi testnet** (Holesky, used before, was retired in 2025)
--   **Hosting**: Vercel (static files only; there is no server)
--   **Tooling**: Node 22 pinned with [mise](https://mise.jdx.dev), ESLint, GitHub Actions
+To make activity worth something, the contract pays tokens: 5 for creating an account, 1 to each
+side for a friendship and 1 to each side for every message. A leaderboard ranks everyone by tokens.
 
----
+## Try it live
 
-## ⚙️ How It Works
+Open **https://node-connect-sigma.vercel.app** in a browser with the
+[MetaMask](https://metamask.io) extension. Every action is a transaction on the Hoodi testnet, so
+the account needs a little Hoodi ETH, which is free from a faucet such as the
+[Google Cloud faucet](https://cloud.google.com/application/web3/faucet/ethereum/hoodi) or the
+[PoW faucet](https://hoodi-faucet.pk910.de/).
 
-The whole backend is one contract, `contracts/ChatApp.sol`. It stores each user's name and friend list, every chat as an array of messages keyed by the hash of the two addresses, and a reward balance per address (5 tokens for an account, 1 per friendship and 1 per message for both sides). The frontend is a static Next.js export with no server: it reads the contract directly from the browser through MetaMask (`Utils/apiFeature.js`), and every write (create account, add friend, send message) is a transaction the user signs. `Context/ChatAppContext.js` holds the app state and refreshes it after each transaction is mined. Configuration is read once, in `Context/config.js`, which stops the build with a clear message when a variable is missing or wrong.
+> MetaMask currently warns that the site and its contract are high risk. The live contract was
+> deployed from a wallet whose key leaked, and wallet security services flag everything that wallet
+> created. Redeploying from a fresh wallet is the first step of the rework (see
+> [Known limitations](#status-and-roadmap)). To try the app without that warning, use the
+> [local chain](#run-it-locally); it needs no testnet ETH either.
 
+Things to try in the first two minutes:
+
+1. **Connect Wallet** and approve the network switch: the app adds Hoodi to MetaMask if it is missing.
+2. **Create an account** with a username: the header balance shows 5 TOK once the transaction is mined.
+3. Open **Add Friends** and add someone: both of you get 1 TOK, and they appear in your friends list.
+4. Open the chat with that friend and **send a message** (Enter sends): both balances go up by 1.
+5. Open the **Leaderboard** to see everyone ranked by tokens.
+
+<table>
+  <tr>
+    <td width="50%"><img src="docs/images/find-friends.png" alt="Add Friends page: cards for dave and erin, each with an Add Friend button"><p align="center"><sub>Registered users you can add, read from the contract (<a href="#the-contract">how friendships work</a>)</sub></p></td>
+    <td width="50%"><img src="docs/images/leaderboard.png" alt="Leaderboard: alice 13, bob 12, carol 8, dave 7, erin 5 tokens"><p align="center"><sub>Everyone ranked by tokens (<a href="#the-contract">the reward rules</a>)</sub></p></td>
+  </tr>
+</table>
+
+<sub>Screenshots: the production build of this commit on a local Hardhat chain seeded with demo
+accounts (alice, bob, carol, dave, erin), 1440x900, 2026-10-16. The live site shows the same
+screens for Hoodi accounts.</sub>
+
+## Features
+
+- **Wallet sign-in**: MetaMask connects the account; the app switches MetaMask to the configured
+  network and adds it when missing.
+- **On-chain accounts**: one username per address, stored in the contract.
+- **Friends**: add any registered user; the friendship is written for both sides.
+- **Chat**: messages between friends are stored on chain in one shared chat per pair, oldest first,
+  and the chat reloads when a sent message is mined.
+- **Token rewards**: the contract pays 5 tokens per account, 1 to both sides per friendship and 1 to
+  both sides per message; the header shows your balance.
+- **Leaderboard** of every user ranked by tokens.
+- **Local chain mode**: the same app runs against a Hardhat node with test accounts, no testnet ETH
+  needed.
+
+## Why it exists
+
+It started as a final-year project to learn how a dApp is built end to end: a Solidity contract, its
+tests, a deploy to a public testnet and a frontend that talks to it through a wallet. Bringing it up
+to date in 2026 (Next.js 16, ethers 6, Hoodi after Holesky was retired, CI) taught the rest: a leaked
+deployer key does not stop mattering when the file is deleted, and putting everything on chain makes
+every click cost a wallet confirmation and every message public.
+
+## How it works
+
+```mermaid
+flowchart LR
+    U["Browser + MetaMask"] --> V
+    subgraph Vercel["Vercel (free)"]
+        V["Static Next.js export<br/>no server code"]
+    end
+    U -- "reads (eth_call) and signed<br/>transactions, via ethers 6" --> R["Public Hoodi RPC node"]
+    R --> C[("ChatApp contract<br/>Hoodi testnet")]
 ```
-Browser (Next.js static site on Vercel)
-   │  MetaMask signs transactions, ethers.js encodes calls
-   ▼
-ChatApp contract on Hoodi ── accounts, friends, messages, rewards
+
+What happens when you send a message:
+
+```mermaid
+sequenceDiagram
+    actor A as You
+    participant UI as Chat (ChatAppContext)
+    participant M as MetaMask
+    participant C as ChatApp contract
+    A->>UI: type a message, press Enter
+    UI->>M: sendMessage(friend, text)
+    M->>A: confirm the transaction and its gas
+    M->>C: signed transaction
+    C->>C: check you are friends, append to the shared chat, +1 token to both
+    C-->>UI: transaction mined
+    UI->>C: readMessage(friend), balances for the leaderboard
+    UI-->>A: chat and balance refreshed
 ```
 
----
+The page holds no state of its own beyond what it read last: after each mined transaction,
+`Context/ChatAppContext.js` reads the account, friends, chat and balances from the contract again.
 
-## 🚀 Run It Locally
+### The contract
 
-**Prerequisites:** Git, [mise](https://mise.jdx.dev) (or Node 22 installed another way), and the MetaMask browser extension.
+[`contracts/ChatApp.sol`](contracts/ChatApp.sol) is the whole backend.
 
-1.  **Clone the repository**
-    ```bash
-    git clone https://github.com/A-RYAN-1/node-connect.git
-    cd node-connect
-    ```
+| Call | Who can call it | Effect | Tokens |
+|---|---|---|---|
+| `createAccount(name)` | an address without an account; the name must not be empty | stores the username | +5 to you |
+| `addFriend(address, name)` | a registered user, for another registered user who is not already a friend and not themselves | adds the friendship to both lists | +1 to both |
+| `sendMessage(friend, text)` | friends only | appends to the chat keyed by the hash of both addresses | +1 to both |
+| `readMessage(friend)` | anyone (`eth_call`) | returns the chat, oldest first | - |
+| `getAllAppUser()`, `getMyFriendList()`, `getUsername(address)` | anyone (`eth_call`) | read accounts and friends | - |
+| `mineMessageSafe(friend, nonce)` | anyone | +1 when `keccak(chat, last message, nonce)` is below a fixed target; not used by the UI | +1 to the caller |
 
-2.  **Install Node 22 and the dependencies**
-    ```bash
-    mise install   # reads mise.toml
-    npm ci
-    ```
+Tokens are a balance kept inside the contract (`minerReward`), not an ERC-20 token, so they do not
+show up in a wallet.
 
-3.  **Set the environment variables**
-    ```bash
-    cp .env.example .env
-    ```
-    The defaults point at the public Hoodi deployment, so the app works without changing anything. `.env` is git-ignored; never commit it.
+### Tech stack
 
-4.  **Start the app**
-    ```bash
-    npm run dev
-    ```
-    Open [http://localhost:3000](http://localhost:3000), connect MetaMask and approve the switch to Hoodi. Creating an account and sending messages cost a little Hoodi ETH, which is free from a Hoodi faucet, for example the [Google Cloud faucet](https://cloud.google.com/application/web3/faucet/ethereum/hoodi) or the [PoW faucet](https://hoodi-faucet.pk910.de/).
+| Layer | Technology |
+|---|---|
+| Smart contract | Solidity 0.8.19, Hardhat 2 (compile, local node, tests, deploy) |
+| Frontend | Next.js 16 (static export), React 18, CSS Modules |
+| Chain access | ethers 6 through MetaMask (`BrowserProvider`) |
+| Network | Ethereum Hoodi testnet (chain 560048); a local Hardhat node (chain 1337) for development |
+| Tests and checks | Hardhat tests (Mocha, Chai), ESLint (Next.js rules), an ABI freshness check |
+| CI and hosting | GitHub Actions (CI on every push, daily uptime check), Vercel Hobby |
+| Local setup | Node 22 pinned with mise |
 
-### Run everything on a local chain (no testnet ETH needed)
+### Design decisions
 
-```bash
-npm run node            # terminal 1: local Hardhat chain on http://127.0.0.1:8545
-npm run deploy-local    # terminal 2: prints the contract address
-```
+1. **The contract is the whole backend.** No server to run or pay for, and no one can edit the
+   history. Trade-off: every write needs a wallet confirmation and gas, and everything stored is
+   public, messages included.
+2. **A static export on Vercel.** The site is files only, so it is free to host and fast (Lighthouse
+   performance 99 on desktop). Trade-off: there is no server to index data, so the leaderboard makes
+   one call per user and sorts in the browser.
+3. **Reads go through the user's wallet.** One provider for reads and writes keeps the code small.
+   Trade-off: without MetaMask the app cannot show any data.
+4. **Configuration is checked in one place at build time.** `Context/config.js` stops the build when
+   the contract address or network is missing or malformed, so a bad deploy never goes live.
+5. **The contract ABI is a checked-in file, kept fresh by CI.** The frontend imports
+   `Context/ChatApp.json`, and CI fails when it differs from the compiled contract.
 
-Set `NEXT_PUBLIC_CONTRACT_ADDRESS` to the printed address and `NEXT_PUBLIC_NETWORK=localhost` in `.env`, run `npm run dev`, and import one of the test accounts `npm run node` prints into MetaMask. Those accounts and keys are public and only for the local chain.
-
-### Deploy your own contract to Hoodi
-
-1.  Create a fresh MetaMask account that will only ever hold testnet ETH, and fund it from a Hoodi faucet.
-2.  Put its private key in `.env` as `DEPLOYER_PRIVATE_KEY` (optionally an Alchemy or Infura URL as `HOODI_RPC_URL`).
-3.  Run `npm run deploy` and set `NEXT_PUBLIC_CONTRACT_ADDRESS` to the address it prints.
-4.  If you changed the contract, run `npm run abi` so the frontend uses the new ABI.
-
----
-
-## 🗂️ Project Structure
+<details>
+<summary><strong>Project structure</strong></summary>
 
 ```
 contracts/ChatApp.sol      the smart contract (accounts, friends, messages, rewards)
 test/ChatApp.test.js       contract tests (Hardhat)
 scripts/deploy.js          deploys the contract; export-abi.js copies the ABI to Context/
 Context/config.js          reads and checks every environment variable (the only place that does)
-Context/networks.js        networks MetaMask can be switched to
-Context/ChatAppContext.js  app state, refreshed after each mined transaction
+Context/networks.js        networks MetaMask can be switched to (hoodi, sepolia, localhost)
+Context/ChatAppContext.js  app state, read again from the contract after each mined transaction
 Utils/apiFeature.js        MetaMask connection and the contract instance
-Components/                UI components (NavBar, Friend list and Chat, UserCard, Model, ...)
-pages/                     routes: / (chat), /alluser (find friends), /leaderboard
+Components/                NavBar, Friend list and Chat, UserCard, Model (create account), Error
+pages/                     / (chat), /alluser (add friends), /leaderboard
+.github/workflows/         ci.yml (lint, tests, ABI check, build), uptime.yml (daily)
 ```
 
----
+</details>
 
-## 🔑 Environment Variables
+## Engineering quality
+
+| Area | What is in place |
+|---|---|
+| Tests | 9 Hardhat tests of the contract: accounts (reward, empty name, duplicates), friends (both sides, self, duplicate, unregistered), messages (shared chat order, non-friends rejected) and mining; all passing on 2026-10-16 |
+| CI | GitHub Actions on every push: ESLint, the contract tests, a check that `Context/ChatApp.json` matches the compiled contract, and the production build |
+| Uptime | A daily workflow requests `/`, `/alluser` and `/leaderboard` on the live site and fails unless each answers 200 with the app |
+| Security | No secrets in the frontend (only public `NEXT_PUBLIC_` values); the deployer key lives only in a local `.env`; security headers from `vercel.json` (`nosniff`, `DENY` framing, referrer and permissions policies) |
+| Measured | Lighthouse on the live site, 2026-10-12 (mobile / desktop): performance 89-90 / 99, accessibility 100 / 100, best practices 100 / 100, SEO 100 / 100 |
+| Dependencies | `npm audit --omit=dev` (what ships to the browser) reports no vulnerabilities; the remaining findings are in Hardhat's development toolchain |
+
+Run them:
+
+```bash
+npm run lint      # ESLint
+npm test          # contract tests
+npm run build     # static export to out/
+```
+
+## Run it locally
+
+Works on Windows (Git Bash), macOS and Linux. You need **Git**, **Node 22** (pinned in `mise.toml`;
+[mise](https://mise.jdx.dev) installs it) and the **MetaMask** browser extension.
+
+```bash
+git clone https://github.com/A-RYAN-1/node-connect.git
+cd node-connect
+mise install            # skip if you manage Node another way
+npm ci
+cp .env.example .env    # the defaults point at the public Hoodi contract
+npm run dev
+```
+
+Open `http://localhost:3000`, connect MetaMask and approve the switch to Hoodi. Writes need a little
+Hoodi ETH from a faucet (see [Try it live](#try-it-live)).
+
+**On a local chain** (no testnet ETH, no MetaMask warning):
+
+```bash
+npm run node            # terminal 1: Hardhat node on http://127.0.0.1:8545 with funded test accounts
+npm run deploy-local    # terminal 2: deploys the contract and prints its address
+```
+
+In `.env`, set `NEXT_PUBLIC_CONTRACT_ADDRESS` to the printed address and `NEXT_PUBLIC_NETWORK=localhost`,
+run `npm run dev`, and import one of the test accounts `npm run node` prints into MetaMask. Those
+accounts and keys are public and only for the local chain.
+
+<details>
+<summary><strong>Deploy your own contract to Hoodi</strong></summary>
+
+1. Create a fresh MetaMask account that will only ever hold testnet ETH, and fund it from a Hoodi
+   faucet.
+2. Put its private key in `.env` as `DEPLOYER_PRIVATE_KEY` (optionally an Alchemy or Infura URL as
+   `HOODI_RPC_URL`).
+3. Run `npm run deploy` and set `NEXT_PUBLIC_CONTRACT_ADDRESS` to the address it prints.
+4. If you changed the contract, run `npm run abi` so the frontend uses the new ABI.
+
+</details>
+
+<details>
+<summary><strong>Troubleshooting</strong></summary>
+
+- **The build stops with a config error.** `Context/config.js` checks the variables; copy
+  `.env.example` to `.env` (or set them on the host) and build again.
+- **MetaMask shows the wrong network.** Click Connect Wallet again and approve the network switch.
+- **A transaction fails with "insufficient funds".** The account needs a little Hoodi ETH.
+- **Local chain: MetaMask reports a nonce error after restarting `npm run node`.** The chain was
+  reset; in MetaMask, Settings, Advanced, clear the activity data for that account.
+- **`npm ci` fails on Node 18 or 20.** The project needs Node 22 (`mise install`).
+
+</details>
+
+## Environment variables
 
 All of them are listed with comments in [`.env.example`](.env.example).
 
-| Variable | Needed for | What it is |
+| Variable | What it is | Needed |
 |---|---|---|
-| `NEXT_PUBLIC_CONTRACT_ADDRESS` | the app (build time) | Address of the deployed `ChatApp` contract. Public. |
-| `NEXT_PUBLIC_NETWORK` | the app (build time) | Network MetaMask is switched to: `hoodi`, `sepolia` or `localhost` (see `Context/networks.js`). Public. |
-| `HOODI_RPC_URL` | `npm run deploy` | Hoodi RPC URL. Optional; defaults to the free public node. |
-| `DEPLOYER_PRIVATE_KEY` | `npm run deploy` | Key of a testnet-only deployer wallet. Secret: only in your local `.env`, never on the host. |
+| `NEXT_PUBLIC_CONTRACT_ADDRESS` | Address of the deployed `ChatApp` contract. Public. | app (build time) |
+| `NEXT_PUBLIC_NETWORK` | Network MetaMask is switched to: `hoodi`, `sepolia` or `localhost` (`Context/networks.js`). Public. | app (build time) |
+| `HOODI_RPC_URL` | Hoodi RPC URL; defaults to the free public node | `npm run deploy`, optional |
+| `DEPLOYER_PRIVATE_KEY` | Key of a testnet-only deployer wallet. Secret: only in your local `.env`, never on the host | `npm run deploy` |
 
 `NEXT_PUBLIC_` values are compiled into the public JavaScript, so they must never hold a secret.
+Never commit a real `.env` file; only `.env.example` is tracked.
 
----
+## Deployment
 
-## 🧪 Scripts and Tests
+The site is a static export on Vercel's free Hobby plan; the contract lives on the Hoodi testnet at
+[`0x1C562FBbeA759113364Bf1EF282af19Bd8FD1A9f`](https://hoodi.etherscan.io/address/0x1C562FBbeA759113364Bf1EF282af19Bd8FD1A9f).
 
-| Command | What it does |
-|---|---|
-| `npm run dev` | Start the app on port 3000 |
-| `npm run build` | Static export to `out/` |
-| `npm run lint` | ESLint (Next.js core web vitals rules) |
-| `npm test` | Contract tests (Hardhat, 9 tests: accounts, friends, messages, mining) |
-| `npm run abi` | Compile and copy the contract ABI into `Context/ChatApp.json` |
-| `npm run deploy` / `deploy-local` | Deploy the contract to Hoodi / the local chain |
+| Part | Where it runs | How it deploys | Variables it needs |
+|---|---|---|---|
+| Website | Vercel Hobby (free), https://node-connect-sigma.vercel.app | automatically on every push to `main` (Vercel Git integration; checked 2026-10-16) | `NEXT_PUBLIC_CONTRACT_ADDRESS`, `NEXT_PUBLIC_NETWORK` (Production and Preview) |
+| Contract | Hoodi testnet | by hand, `npm run deploy` from a local `.env`; never from CI | `DEPLOYER_PRIVATE_KEY`, optional `HOODI_RPC_URL` (local only) |
 
-GitHub Actions runs lint, the contract tests, an ABI freshness check and the build on every push (`ci.yml`), and checks once a day that the live site answers (`uptime.yml`).
+What a visitor notices (checked 2026-10-16): the site itself has no cold start; every write waits for
+a Hoodi block and needs test ETH from a faucet; the public RPC node is shared and can be slow at
+times.
 
----
+<details>
+<summary><strong>Host your own copy on Vercel</strong></summary>
 
-## ☁️ Deployment
+1. Import the repository in Vercel (framework: Next.js, no root directory).
+2. Set `NEXT_PUBLIC_CONTRACT_ADDRESS` and `NEXT_PUBLIC_NETWORK` in the project's Environment
+   Variables for Production and Preview. Nothing secret is needed.
+3. Deploy. `vercel.json` adds the security headers; `.vercelignore` keeps env files and build output
+   out of CLI uploads.
 
-The site is a static export hosted on Vercel's free Hobby plan. To host your own copy:
+</details>
 
-1.  Import the repository in Vercel (framework: Next.js, no root directory).
-2.  Set `NEXT_PUBLIC_CONTRACT_ADDRESS` and `NEXT_PUBLIC_NETWORK` in the project's Environment Variables for Production and Preview. Nothing secret is needed.
-3.  Deploy. `vercel.json` adds security headers; `.vercelignore` keeps env files and build output out of CLI uploads.
+## Status and roadmap
 
-**Measured on the live site** (Lighthouse, 2026-10-12, mobile / desktop): performance 89-90 / 99, accessibility 100 / 100, best practices 100 / 100, SEO 100 / 100.
+**Reached:** production baseline on 2026-10-12 (Next.js 16 and ethers 6, contract tests, lint and
+build in CI, checked configuration, security headers, a daily uptime check, the Lighthouse scores
+above), and auto-deploy on push since 2026-10-16. Checked by hand on the live site on 2026-10-13:
+adding a friend and sending a message on Hoodi.
 
-`npm audit --omit=dev` reports no vulnerabilities in what ships to the browser. The remaining `npm audit` findings are in Hardhat's development toolchain, which only runs locally and in CI.
+**Known limitations**
 
----
+- MetaMask flags the site and the contract as high risk, because the contract was deployed from a
+  wallet whose private key leaked (it was committed in 2025; the file is gone and the history was
+  rewritten, but the key had already been taken). Only a redeploy from a fresh wallet fixes it.
+- Messages are stored as plain text on a public chain: anyone can read any chat.
+- Tokens are a balance inside the contract, not an ERC-20, and the rewards can be farmed with two
+  accounts of your own. `mineMessageSafe` can be called again for the same message, so it is not
+  safe to wire into the UI.
+- Adding a friend needs no consent from the other person, and there is no way to remove or block.
+- Every action costs a MetaMask confirmation and gas, then a wait for the block.
+- The leaderboard makes one call per user; lists such as `getAllAppUser` grow without a limit.
+- UI: the CHAT tab stays highlighted on every page, friend addresses are shown clipped without
+  `0x`, every friend gets the same avatar, and the GIFs in `assets/` weigh about 14 MB.
 
-## 🩺 Troubleshooting
+**Planned: the rework** (agreed 2026-10-13; each step merged and deployed before the next)
 
--   **The build stops with a config error.** `Context/config.js` checks the variables; copy `.env.example` to `.env` (or set them on the host) and build again.
--   **MetaMask shows the wrong network.** Click Connect Wallet again and approve the network switch; the app adds Hoodi to MetaMask if it is missing.
--   **A transaction fails with "insufficient funds".** The account needs a little Hoodi ETH; use one of the faucets above.
--   **Local chain: MetaMask reports a nonce error after restarting `npm run node`.** The chain was reset; in MetaMask, Settings, Advanced, clear the activity data for that account.
--   **`npm ci` fails on Node 18 or 20.** The project needs Node 22 (`mise install`).
+- [ ] Contracts and tests: an OpenZeppelin ERC-20 token (TOK) with a hard cap, a registry with
+      friend requests (request, accept, decline, remove, block), deployed and verified from a fresh
+      wallet, which should also end the MetaMask warning
+- [ ] Backend on Vercel Functions and Neon: Sign-In with Ethereum, a messages API that stores only
+      ciphertext, and a scheduled job that anchors each day's message hashes on chain
+- [ ] End-to-end encrypted chats (keys derived from one wallet signature) and a new chat UI with
+      pending and failed states
+- [ ] Real token mining: proof of activity plus proof of work, one claim per user per day, bound to
+      the sender, with retargeting and halving; mined in a Web Worker
+- [ ] Production checks again (Slither in CI, API tests, Lighthouse), then this README
 
----
+## Credits
 
-## 📖 Usage
-
--   **Connect Wallet**: Click "Connect Wallet" and approve the connection request in MetaMask.
--   **Create Account**: Enter a username to register your wallet address on the platform.
--   **Add Friends**: Browse the list of registered users and add them as friends.
--   **Send Messages**: Select a friend to open the chat and send messages (Enter sends).
--   **Earn Tokens**: Tokens are rewarded automatically by the smart contract.
--   **View Leaderboard**: See the top users ranked by their token balances.
-
----
-
-## 📷 Working Demo
-
-Account Creation :-
-
-https://github.com/user-attachments/assets/43d3d235-4ac0-4a97-ad3a-c0e051cf8d9f
-
-Adding Friends :-
-
-https://github.com/user-attachments/assets/3ce3d386-fd47-40f3-bfa0-f8130f7e015f
-
-Chatting & Rewards :-
-
-https://github.com/user-attachments/assets/969e8a48-07a7-49d1-84f5-1f372f9aaae2
-
----
-
-## 🧭 Status and Roadmap
-
-Production baseline reached on 2026-10-12: Next.js 16 and ethers 6, contract tests, lint and build in CI, a config module with checked environment variables, security headers, a daily uptime check and Lighthouse scores above. Next steps, one at a time:
-
--   [ ] Faster first load on mobile: the GIFs in `assets/` weigh about 14 MB; convert them to video or WebP.
--   [ ] Deploy automatically on every push to `main` (Vercel Git integration).
--   [ ] Frontend tests for the main flow (connect, create account, add friend, send message).
-
----
-
-## 🤝 Contributing
-
-Contributions are welcome:
-
-1.  **Fork** the repository.
-2.  Create a feature branch (`git checkout -b feature/AmazingFeature`).
-3.  Run `npm run lint`, `npm test` and `npm run build` before committing.
-4.  Push the branch and open a **Pull Request**; CI runs the same checks.
-
----
-
-## 📄 License
-
-[MIT](LICENSE)
+Built by **Aryan Deshmukh** ([A-RYAN-1](https://github.com/A-RYAN-1)): the contract, its tests, the
+frontend, and the 2026 upgrade (Hoodi, Next.js 16, ethers 6, CI, deployment).
+[RealFalseGod](https://github.com/RealFalseGod) contributed the leaderboard page and the token
+balance in the header (October 2025).

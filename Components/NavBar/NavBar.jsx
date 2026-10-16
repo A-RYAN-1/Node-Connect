@@ -117,7 +117,7 @@ const NavBar = () => {
                   </button>
 
                   <div className={Style.tokenBalance}>
-                    💰 <span>{tokenBalance}</span> TOK
+                    <span>{tokenBalance}</span> TOK
                   </div>
                 </div>
               </div>
